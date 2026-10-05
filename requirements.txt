@@ -1,0 +1,27 @@
+# ============================================================================
+# JobPilot — Python dependencies
+# ============================================================================
+# Backend (FastAPI + PostgreSQL)
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+sqlalchemy[asyncio]>=2.0.25
+asyncpg>=0.29.0
+alembic>=1.13.0
+pydantic>=2.6.0
+pydantic-settings>=2.1.0
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+cryptography>=42.0.0
+python-multipart>=0.0.9
+psycopg2-binary>=2.9.9          # for alembic / sync migrations
+aiofiles>=23.2.1
+
+# Existing agent dependencies (preserved)
+selenium>=4.15.0
+undetected-chromedriver>=3.5.4
+pyautogui>=0.9.54
+setuptools>=69.0.0
+openai>=1.10.0
+google-generativeai>=0.3.2
+flask>=3.0.0
+flask-cors>=4.0.0

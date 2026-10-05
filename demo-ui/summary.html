@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Run summary — JobPilot</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .app-nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 16px 32px; border-bottom: 1px solid var(--border-soft);
+  }
+  .app-nav .nav-links{ gap:24px; }
+  .app-nav .nav-links a{ font-size:13.5px; }
+  .app-nav .nav-links a.active{ color: var(--text); }
+
+  .summary-wrap{ max-width: 980px; margin: 0 auto; padding: 56px 24px 100px; }
+  .summary-head{ text-align:center; margin-bottom: 48px; }
+  .summary-head .ic{ width:56px;height:56px;border-radius:50%; background:var(--mint-bg); color:var(--mint); display:flex;align-items:center;justify-content:center; font-size:24px; margin:0 auto 18px; }
+  .summary-head h1{ font-size: 30px; font-weight:800; letter-spacing:-0.01em; margin-bottom:8px; }
+  .summary-head p{ color: var(--text-dim); font-size:14.5px; }
+
+  .stat-grid{ display:grid; grid-template-columns: repeat(5,1fr); gap:14px; margin-bottom: 44px; }
+  .stat-card{ padding: 24px 18px; text-align:center; }
+  .stat-card .num{ font-family: var(--font-mono); font-size: 30px; font-weight:700; }
+  .stat-card .lab{ font-size: 12.5px; color: var(--text-dim); margin-top:6px; }
+  .stat-card .pct{ font-size: 11px; color: var(--text-faint); margin-top:2px; font-family: var(--font-mono); }
+  .stat-card.total .num{ color: var(--text); }
+  .stat-card.applied .num{ color: var(--mint); }
+  .stat-card.skipped .num{ color: var(--amber); }
+  .stat-card.failed .num{ color: var(--coral); }
+  .stat-card.rejected .num{ color: var(--slate); }
+
+  .breakdown-panel{ padding: 32px; margin-bottom: 32px; display:grid; grid-template-columns: 220px 1fr; gap: 40px; align-items:center; }
+  .donut-wrap{ position:relative; width:200px; height:200px; margin:0 auto; }
+  .donut-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .donut-center .n{ font-family: var(--font-mono); font-size:28px; font-weight:700; }
+  .donut-center .l{ font-size:11px; color: var(--text-faint); }
+
+  .legend{ display:flex; flex-direction:column; gap: 16px; }
+  .legend-row{ display:flex; align-items:center; gap:12px; }
+  .legend-row .sw{ width:12px;height:12px;border-radius:3px; flex-shrink:0; }
+  .legend-row .lab{ font-size:14px; font-weight:600; flex:1; }
+  .legend-row .val{ font-family: var(--font-mono); font-size:13px; color: var(--text-dim); }
+  .legend-row .bar-track{ flex:1; height:6px; background: var(--bg-inset); border-radius:3px; overflow:hidden; margin: 0 14px; }
+  .legend-row .bar-fill{ height:100%; border-radius:3px; }
+
+  .next-actions{ display:flex; gap: 14px; justify-content:center; }
+
+  @media (max-width: 800px){
+    .stat-grid{ grid-template-columns: repeat(2,1fr); }
+    .breakdown-panel{ grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="app-nav">
+  <div class="logo"><div class="logo-mark">J</div>JobPilot</div>
+  <div class="nav-links">
+    <a href="agent.html">Agent</a>
+    <a href="applications.html" class="active">Applications</a>
+    <a href="profile.html">Profile</a>
+  </div>
+  <div class="nav-actions">
+    <div class="theme-toggle" id="themeToggle"></div>
+    <div style="width:32px;height:32px;border-radius:50%;background:var(--mint);color:#08110D;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;">AS</div>
+  </div>
+</nav>
+
+<div class="summary-wrap">
+  <div class="summary-head">
+    <div class="ic">✓</div>
+    <h1>Run complete</h1>
+    <p>Started 6:42 PM · Finished 6:58 PM · 16 minutes total</p>
+  </div>
+
+  <div class="stat-grid">
+    <div class="panel stat-card total"><div class="num">42</div><div class="lab">Jobs scanned</div><div class="pct">100%</div></div>
+    <div class="panel stat-card applied"><div class="num">27</div><div class="lab">Applied</div><div class="pct">64%</div></div>
+    <div class="panel stat-card skipped"><div class="num">9</div><div class="lab">Skipped</div><div class="pct">21%</div></div>
+    <div class="panel stat-card failed"><div class="num">3</div><div class="lab">Failed</div><div class="pct">7%</div></div>
+    <div class="panel stat-card rejected"><div class="num">3</div><div class="lab">Already rejected</div><div class="pct">7%</div></div>
+  </div>
+
+  <div class="panel breakdown-panel">
+    <div class="donut-wrap">
+      <svg width="200" height="200" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="80" fill="none" stroke="var(--border-soft)" stroke-width="22"/>
+        <!-- applied 64% -->
+        <circle cx="100" cy="100" r="80" fill="none" stroke="var(--mint)" stroke-width="22"
+          stroke-dasharray="322 503" stroke-dashoffset="0" transform="rotate(-90 100 100)" stroke-linecap="round"/>
+        <!-- skipped 21% -->
+        <circle cx="100" cy="100" r="80" fill="none" stroke="var(--amber)" stroke-width="22"
+          stroke-dasharray="105 503" stroke-dashoffset="-322" transform="rotate(-90 100 100)"/>
+        <!-- failed 7% -->
+        <circle cx="100" cy="100" r="80" fill="none" stroke="var(--coral)" stroke-width="22"
+          stroke-dasharray="35 503" stroke-dashoffset="-427" transform="rotate(-90 100 100)"/>
+        <!-- rejected 7% -->
+        <circle cx="100" cy="100" r="80" fill="none" stroke="var(--slate)" stroke-width="22"
+          stroke-dasharray="35 503" stroke-dashoffset="-462" transform="rotate(-90 100 100)"/>
+      </svg>
+      <div class="donut-center"><div class="n">42</div><div class="l">total jobs</div></div>
+    </div>
+    <div class="legend">
+      <div class="legend-row"><div class="sw" style="background:var(--mint);"></div><div class="lab">Applied</div><div class="bar-track"><div class="bar-fill" style="width:64%;background:var(--mint);"></div></div><div class="val">27 · 64%</div></div>
+      <div class="legend-row"><div class="sw" style="background:var(--amber);"></div><div class="lab">Skipped</div><div class="bar-track"><div class="bar-fill" style="width:21%;background:var(--amber);"></div></div><div class="val">9 · 21%</div></div>
+      <div class="legend-row"><div class="sw" style="background:var(--coral);"></div><div class="lab">Failed</div><div class="bar-track"><div class="bar-fill" style="width:7%;background:var(--coral);"></div></div><div class="val">3 · 7%</div></div>
+      <div class="legend-row"><div class="sw" style="background:var(--slate);"></div><div class="lab">Already rejected</div><div class="bar-track"><div class="bar-fill" style="width:7%;background:var(--slate);"></div></div><div class="val">3 · 7%</div></div>
+    </div>
+  </div>
+
+  <div class="next-actions">
+    <a href="applications.html" class="btn btn-primary btn-lg">View all applications</a>
+    <a href="agent.html" class="btn btn-secondary btn-lg">Start a new run</a>
+  </div>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('jp-theme');
+  if(saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', ()=>{
+    const cur = root.getAttribute('data-theme');
+    const next = cur === 'light' ? 'dark' : 'light';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('jp-theme', next);
+  });
+</script>
+</body>
+</html>

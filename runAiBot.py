@@ -257,8 +257,8 @@ def apply_filters() -> None:
 
     except Exception as e:
         print_lg("Setting the preferences failed!")
-        pyautogui.confirm(f"Faced error while applying filters. Please make sure correct filters are selected, click on show results and click on any button of this dialog, I know it sucks. Can't turn off Pause after search when error occurs! ERROR: {e}", ["Doesn't look good, but Continue XD", "Look's good, Continue"])
-        # print_lg(e)
+        print_lg(e)
+        pyautogui.confirm(f"Faced error while applying filters. Please make sure correct filters are selected, click on show results and click on any button of this dialog, I know it sucks. Can't turn off Pause after search when error occurs! ERROR: {e}", "Error in applying filters", ["Doesn't look good, but Continue XD", "Look's good, Continue"])
 
 
 
@@ -1172,7 +1172,9 @@ chatGPT_tab = False
 linkedIn_tab = False
 
 def main() -> None:
-    pyautogui.alert("Please consider sponsoring this project at:\n\nhttps://github.com/sponsors/GodsScion\n\n", "Support the project", "Okay")
+    # pyautogui.alert("Please consider sponsoring this project at:\n\nhttps://github.com/sponsors/GodsScion\n\n", "Support the project", "Okay")
+    print("Please consider sponsoring this project at:")
+    print("https://github.com/sponsors/GodsScion")
     total_runs = 1
     try:
         global linkedIn_tab, tabs_count, useNewResume, aiClient
@@ -1240,7 +1242,7 @@ def main() -> None:
         print_lg("Browser window closed or session is invalid. Exiting.", e)
     except Exception as e:
         critical_error_log("In Applier Main", e)
-        pyautogui.alert(e,alert_title)
+        pyautogui.alert(str(e),alert_title)
     finally:
         summary = "Total runs: {}\nJobs Easy Applied: {}\nExternal job links collected: {}\nTotal applied or collected: {}\nFailed jobs: {}\nIrrelevant jobs skipped: {}\n".format(total_runs,easy_applied_count,external_jobs_count,easy_applied_count + external_jobs_count,failed_count,skip_count)
         print_lg(summary)

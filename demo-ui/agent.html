@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Control Room — JobPilot</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  body{ height:100vh; overflow:hidden; display:flex; flex-direction:column; }
+  .app-shell{ flex:1; display:flex; flex-direction:column; min-height:0; }
+
+  /* top app nav, slimmer than marketing nav */
+  .app-nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 14px 24px; border-bottom: 1px solid var(--border-soft);
+    flex-shrink:0; background: var(--bg-raised);
+  }
+  .app-nav .nav-links{ gap:24px; }
+  .app-nav .nav-links a{ font-size:13.5px; }
+  .app-nav .nav-links a.active{ color: var(--text); position:relative; }
+  .app-nav .nav-links a.active::after{ content:''; position:absolute; left:0; right:0; bottom:-17px; height:2px; background: var(--mint); }
+
+  /* control bar: run state + stats + stop */
+  .control-bar{
+    display:flex; align-items:center; gap: 18px;
+    padding: 14px 24px; border-bottom: 1px solid var(--border-soft);
+    background: var(--bg);
+    flex-shrink:0;
+  }
+  .run-status{
+    display:flex; align-items:center; gap:10px;
+    font-family: var(--font-mono); font-size: 13px; color: var(--mint);
+    background: var(--mint-bg); border: 1px solid color-mix(in srgb, var(--mint) 35%, transparent);
+    padding: 8px 14px; border-radius: 20px;
+  }
+  .run-status .dot{ width:7px;height:7px;border-radius:50%; background:var(--mint); animation: pulse 1.6s infinite; box-shadow: 0 0 8px var(--mint); }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+  .run-elapsed{ font-family: var(--font-mono); font-size: 12.5px; color: var(--text-faint); }
+
+  .stat-pills{ display:flex; gap: 10px; margin-left:auto; }
+  .stat-pill{
+    display:flex; align-items:center; gap: 7px;
+    font-family: var(--font-mono); font-size: 12.5px;
+    padding: 7px 12px; border-radius: var(--radius-md);
+    background: var(--bg-panel); border: 1px solid var(--border-soft);
+  }
+  .stat-pill .n{ font-weight:700; font-size:14px; }
+  .stat-pill.applied .n{ color: var(--mint); }
+  .stat-pill.skipped .n{ color: var(--amber); }
+  .stat-pill.failed .n{ color: var(--coral); }
+  .stat-pill.rejected .n{ color: var(--slate); }
+
+  .control-bar .spacer{ flex:1; }
+
+  /* main split */
+  .main-split{ flex:1; display:grid; grid-template-columns: 1fr 380px; min-height:0; }
+
+  /* browser pane */
+  .browser-pane{ display:flex; flex-direction:column; padding: 18px; min-height:0; }
+  .browser-window{
+    flex:1; display:flex; flex-direction:column; border-radius: var(--radius-lg);
+    border: 1px solid var(--border); overflow:hidden; background: var(--bg-raised);
+    box-shadow: var(--shadow-md); min-height:0; position:relative;
+  }
+  .browser-chrome-bar{
+    display:flex; align-items:center; gap:10px; padding: 10px 14px;
+    border-bottom: 1px solid var(--border-soft); background: var(--bg-panel); flex-shrink:0;
+  }
+  .browser-dots{ display:flex; gap:6px; }
+  .browser-dots span{ width:10px;height:10px;border-radius:50%; background: var(--border); }
+  .browser-tabs{ display:flex; gap:6px; margin-left: 8px; }
+  .browser-tab{
+    font-size:11.5px; padding:5px 10px; border-radius:6px 6px 0 0; background: var(--bg-inset);
+    color: var(--text-dim); display:flex; align-items:center; gap:6px; font-family: var(--font-mono);
+  }
+  .browser-tab.active{ background: var(--bg); color: var(--text); }
+  .browser-addressbar{
+    display:flex; align-items:center; gap:8px; padding: 8px 14px;
+    background: var(--bg); border-bottom: 1px solid var(--border-soft); flex-shrink:0;
+  }
+  .browser-addressbar .url-box{
+    flex:1; font-family: var(--font-mono); font-size: 12.5px; color: var(--text-dim);
+    background: var(--bg-inset); border: 1px solid var(--border-soft); border-radius:7px; padding: 7px 12px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .browser-viewport{
+    flex:1; background: #fff; position:relative; overflow:hidden; min-height:0;
+  }
+  [data-theme="light"] .browser-viewport{ background: #fff; }
+
+  /* mock linkedin-style page inside viewport */
+  .li-mock{ padding: 24px; font-family: 'Inter', sans-serif; color: #1a1a1a; height:100%; overflow:auto; }
+  .li-topbar{ display:flex; align-items:center; gap:16px; padding-bottom:16px; border-bottom:1px solid #e5e5e5; margin-bottom:20px; }
+  .li-logo{ width:32px;height:32px;border-radius:6px; background:#0a66c2; color:#fff; display:flex;align-items:center;justify-content:center; font-weight:800; font-size:16px; }
+  .li-search{ flex:1; background:#eef3f8; border-radius:6px; padding:8px 14px; font-size:13px; color:#6b7280; }
+  .li-job-card{ border:1px solid #e5e5e5; border-radius:10px; padding:18px; margin-bottom:12px; transition: all 0.3s; position:relative; }
+  .li-job-card.targeting{ border-color:#0a66c2; box-shadow: 0 0 0 3px rgba(10,102,194,0.12); }
+  .li-job-card h4{ font-size:15px; margin-bottom:4px; }
+  .li-job-card .co{ font-size:13px; color:#6b7280; margin-bottom:8px; }
+  .li-job-card .tags{ display:flex; gap:8px; }
+  .li-job-card .tag{ font-size:11px; background:#f3f4f6; color:#4b5563; padding:3px 8px; border-radius:4px; }
+  .li-easy-apply{ position:absolute; top:18px; right:18px; background:#0a66c2; color:#fff; font-size:12px; font-weight:600; padding:7px 14px; border-radius:18px; }
+
+  .cursor-dot{
+    position:absolute; width:18px; height:18px; border-radius:50%;
+    background: rgba(10,102,194,0.25); border: 2px solid #0a66c2;
+    pointer-events:none; transition: all 0.6s cubic-bezier(.4,0,.2,1); z-index:10;
+  }
+
+  .browser-statusbar{
+    padding: 8px 14px; border-top:1px solid var(--border-soft); background: var(--bg-panel);
+    font-family: var(--font-mono); font-size: 11.5px; color: var(--text-faint); flex-shrink:0;
+    display:flex; justify-content:space-between;
+  }
+
+  /* reasoning side panel */
+  .reasoning-panel{
+    border-left: 1px solid var(--border-soft); display:flex; flex-direction:column; min-height:0; background: var(--bg-raised);
+  }
+  .reasoning-head{
+    padding: 16px 20px; border-bottom: 1px solid var(--border-soft); flex-shrink:0;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .reasoning-head h3{ font-size: 14px; font-weight:700; display:flex; align-items:center; gap:8px; }
+  .reasoning-head .live-tag{ font-family: var(--font-mono); font-size:10.5px; color: var(--mint); display:flex; align-items:center; gap:5px; }
+  .reasoning-head .live-tag .d{ width:6px;height:6px;border-radius:50%; background:var(--mint); animation:pulse 1.6s infinite; }
+
+  .reasoning-feed{ flex:1; overflow-y:auto; padding: 16px 20px; display:flex; flex-direction:column; gap: 14px; }
+  .feed-entry{ display:flex; gap: 10px; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(4px);} to{opacity:1;transform:translateY(0);} }
+  .feed-entry .ic{
+    width: 22px; height:22px; border-radius:50%; flex-shrink:0; margin-top:1px;
+    display:flex; align-items:center; justify-content:center; font-size:11px;
+    background: var(--bg-inset); border: 1px solid var(--border-soft); color: var(--text-faint);
+  }
+  .feed-entry.success .ic{ background: var(--mint-bg); color: var(--mint); border-color: transparent; }
+  .feed-entry.warn .ic{ background: var(--amber-bg); color: var(--amber); border-color: transparent; }
+  .feed-entry.fail .ic{ background: var(--coral-bg); color: var(--coral); border-color: transparent; }
+  .feed-entry .body{ flex:1; }
+  .feed-entry .txt{ font-size: 13px; line-height: 1.5; color: var(--text-dim); }
+  .feed-entry.success .txt, .feed-entry.fail .txt{ color: var(--text); }
+  .feed-entry .txt b{ font-weight:600; color: var(--text); }
+  .feed-entry .time{ font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); margin-top: 3px; }
+
+  .reasoning-footer{ padding: 16px 20px; border-top: 1px solid var(--border-soft); flex-shrink:0; }
+
+  /* human in the loop modal */
+  .hitl-overlay{
+    position:absolute; inset:0; background: rgba(10,12,16,0.78); backdrop-filter: blur(6px);
+    display:none; align-items:center; justify-content:center; z-index: 20; border-radius: var(--radius-lg);
+  }
+  .hitl-overlay.show{ display:flex; }
+  .hitl-card{
+    background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 32px; max-width: 380px; text-align:center; box-shadow: var(--shadow-lg);
+  }
+  .hitl-card .ic{ width:48px;height:48px;border-radius:50%; background: var(--amber-bg); color:var(--amber); display:flex;align-items:center;justify-content:center; font-size:22px; margin:0 auto 18px; }
+  .hitl-card h3{ font-size:17px; font-weight:700; margin-bottom:10px; }
+  .hitl-card p{ font-size: 13.5px; color: var(--text-dim); line-height:1.6; margin-bottom: 22px; }
+
+  /* stop confirm modal */
+  .modal-overlay{
+    position:fixed; inset:0; background: rgba(10,12,16,0.6); backdrop-filter: blur(4px);
+    display:none; align-items:center; justify-content:center; z-index:100;
+  }
+  .modal-overlay.show{ display:flex; }
+  .modal-card{ background: var(--bg-panel); border:1px solid var(--border); border-radius: var(--radius-lg); padding:28px; max-width: 360px; box-shadow: var(--shadow-lg); }
+  .modal-card h3{ font-size:16px; font-weight:700; margin-bottom:10px; }
+  .modal-card p{ font-size:13.5px; color:var(--text-dim); line-height:1.55; margin-bottom:22px; }
+  .modal-actions{ display:flex; gap:10px; justify-content:flex-end; }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+  <nav class="app-nav">
+    <div class="logo"><div class="logo-mark">J</div>JobPilot</div>
+    <div class="nav-links">
+      <a href="agent.html" class="active">Agent</a>
+      <a href="applications.html">Applications</a>
+      <a href="profile.html">Profile</a>
+    </div>
+    <div class="nav-actions">
+      <div class="theme-toggle" id="themeToggle"></div>
+      <div style="width:32px;height:32px;border-radius:50%;background:var(--mint);color:#08110D;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;">AS</div>
+    </div>
+  </nav>
+
+  <div class="control-bar">
+    <div class="run-status"><span class="dot"></span>Agent running</div>
+    <div class="run-elapsed">Elapsed 04:12 · Job 6 of ~40</div>
+    <div class="spacer"></div>
+    <div class="stat-pills">
+      <div class="stat-pill applied"><span class="n" id="statApplied">4</span>Applied</div>
+      <div class="stat-pill skipped"><span class="n" id="statSkipped">1</span>Skipped</div>
+      <div class="stat-pill failed"><span class="n" id="statFailed">0</span>Failed</div>
+      <div class="stat-pill rejected"><span class="n" id="statRejected">0</span>Rejected</div>
+    </div>
+    <button class="btn btn-danger btn-sm" onclick="showStopModal()">■ Stop agent</button>
+  </div>
+
+  <div class="main-split">
+    <div class="browser-pane">
+      <div class="browser-window" id="browserWindow">
+        <div class="browser-chrome-bar">
+          <div class="browser-dots"><span></span><span></span><span></span></div>
+          <div class="browser-tabs"><div class="browser-tab active">🔵 LinkedIn — Jobs</div></div>
+        </div>
+        <div class="browser-addressbar">
+          <button class="btn-icon" style="background:none;border:none;color:var(--text-faint);">←</button>
+          <button class="btn-icon" style="background:none;border:none;color:var(--text-faint);">→</button>
+          <div class="url-box">🔒 www.linkedin.com/jobs/search/?keywords=product%20designer&location=Remote</div>
+        </div>
+        <div class="browser-viewport">
+          <div class="li-mock">
+            <div class="li-topbar">
+              <div class="li-logo">in</div>
+              <div class="li-search">🔍 Product Designer · Remote</div>
+            </div>
+            <div class="li-job-card" id="jobCard1">
+              <div class="li-easy-apply">Easy Apply</div>
+              <h4>Senior Product Designer</h4>
+              <div class="co">Stripe · Remote · 2,043 applicants</div>
+              <div class="tags"><span class="tag">Full-time</span><span class="tag">Mid-Senior level</span></div>
+            </div>
+            <div class="li-job-card" id="jobCard2">
+              <div class="li-easy-apply">Easy Apply</div>
+              <h4>Product Designer II</h4>
+              <div class="co">Figma · San Francisco (Remote) · 891 applicants</div>
+              <div class="tags"><span class="tag">Full-time</span><span class="tag">Mid level</span></div>
+            </div>
+            <div class="li-job-card" id="jobCard3">
+              <h4>Staff Designer, Platform</h4>
+              <div class="co">Notion · Remote · 1,204 applicants</div>
+              <div class="tags"><span class="tag">Full-time</span><span class="tag">Senior level</span></div>
+            </div>
+          </div>
+          <div class="cursor-dot" id="cursorDot" style="top:140px;left:340px;"></div>
+        </div>
+        <div class="browser-statusbar">
+          <span>Connected via secure session</span>
+          <span id="statusRight">Reading job card 2 of 3...</span>
+        </div>
+
+        <!-- HUMAN IN THE LOOP OVERLAY -->
+        <div class="hitl-overlay" id="hitlOverlay">
+          <div class="hitl-card">
+            <div class="ic">⏸</div>
+            <h3>We need you for a second</h3>
+            <p>LinkedIn is asking for a login. Sign in below in the browser window, then let the agent know you're done — it'll pick up right where it left off.</p>
+            <button class="btn btn-primary" style="width:100%;" onclick="resolveHitl()">I've logged in — continue</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reasoning-panel">
+      <div class="reasoning-head">
+        <h3>🧠 Agent reasoning</h3>
+        <span class="live-tag"><span class="d"></span>LIVE</span>
+      </div>
+      <div class="reasoning-feed" id="reasoningFeed">
+        <div class="feed-entry success">
+          <div class="ic">✓</div>
+          <div class="body"><div class="txt">Applied to <b>Stripe</b> — Senior Product Designer</div><div class="time">2 min ago</div></div>
+        </div>
+        <div class="feed-entry warn">
+          <div class="ic">⚠</div>
+          <div class="body"><div class="txt">Skipped <b>Canva</b> — salary range below your minimum</div><div class="time">3 min ago</div></div>
+        </div>
+        <div class="feed-entry">
+          <div class="ic">→</div>
+          <div class="body"><div class="txt">Opening job card: <b>Product Designer II</b> at Figma</div><div class="time">just now</div></div>
+        </div>
+        <div class="feed-entry">
+          <div class="ic">→</div>
+          <div class="body"><div class="txt">Comparing role requirements against your profile</div><div class="time">just now</div></div>
+        </div>
+      </div>
+      <div class="reasoning-footer">
+        <button class="btn btn-secondary" style="width:100%;" onclick="simulateHitl()">Simulate: request login (demo)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STOP CONFIRM MODAL -->
+<div class="modal-overlay" id="stopModal">
+  <div class="modal-card">
+    <h3>Stop the agent?</h3>
+    <p>It's mid-application for "Product Designer II" at Figma. Stopping now leaves that one unsubmitted — everything already applied stays as is.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="hideStopModal()">Keep running</button>
+      <button class="btn btn-danger" onclick="confirmStop()">Stop agent</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('jp-theme');
+  if(saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', ()=>{
+    const cur = root.getAttribute('data-theme');
+    const next = cur === 'light' ? 'dark' : 'light';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('jp-theme', next);
+  });
+
+  function showStopModal(){ document.getElementById('stopModal').classList.add('show'); }
+  function hideStopModal(){ document.getElementById('stopModal').classList.remove('show'); }
+  function confirmStop(){
+    hideStopModal();
+    document.querySelector('.run-status').innerHTML = '<span class="dot" style="background:var(--coral);box-shadow:0 0 8px var(--coral);"></span>Agent stopped';
+    document.querySelector('.run-status').style.color = 'var(--coral)';
+    document.querySelector('.run-status').style.background = 'var(--coral-bg)';
+    document.querySelector('.run-status').style.borderColor = 'transparent';
+    setTimeout(()=>{ window.location.href = 'summary.html'; }, 900);
+  }
+
+  function simulateHitl(){ document.getElementById('hitlOverlay').classList.add('show'); }
+  function resolveHitl(){ document.getElementById('hitlOverlay').classList.remove('show'); }
+
+  // cursor animation across job cards to suggest live activity
+  const positions = [
+    {top: 130, left: 360},
+    {top: 250, left: 380},
+    {top: 360, left: 340},
+  ];
+  let pi = 0;
+  setInterval(()=>{
+    pi = (pi+1) % positions.length;
+    const dot = document.getElementById('cursorDot');
+    dot.style.top = positions[pi].top + 'px';
+    dot.style.left = positions[pi].left + 'px';
+  }, 2600);
+
+  // live feed simulation
+  const feedSamples = [
+    {type:'', icon:'→', text:'Filling form field: <b>Years of experience</b>'},
+    {type:'', icon:'→', text:'Attaching resume: Aanya_Sharma_Resume.pdf'},
+    {type:'success', icon:'✓', text:'Applied to <b>Figma</b> — Product Designer II'},
+    {type:'', icon:'→', text:'Opening next match: Staff Designer at Notion'},
+    {type:'warn', icon:'⚠', text:'Skipped <b>Notion</b> — requires 8+ years, you have 6'},
+  ];
+  let fi = 0;
+  const feedEl = document.getElementById('reasoningFeed');
+  function pushFeed(){
+    if(fi >= feedSamples.length) return;
+    const s = feedSamples[fi];
+    const div = document.createElement('div');
+    div.className = 'feed-entry ' + s.type;
+    div.innerHTML = `<div class="ic">${s.icon}</div><div class="body"><div class="txt">${s.text}</div><div class="time">just now</div></div>`;
+    feedEl.appendChild(div);
+    feedEl.scrollTop = feedEl.scrollHeight;
+    if(s.type === 'success'){
+      const el = document.getElementById('statApplied');
+      el.textContent = parseInt(el.textContent) + 1;
+    }
+    if(s.type === 'warn'){
+      const el = document.getElementById('statSkipped');
+      el.textContent = parseInt(el.textContent) + 1;
+    }
+    fi++;
+  }
+  setInterval(pushFeed, 3200);
+</script>
+</body>
+</html>

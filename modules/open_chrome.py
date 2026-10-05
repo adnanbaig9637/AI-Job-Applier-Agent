@@ -25,7 +25,8 @@ else:
     # from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
-from modules.helpers import find_default_profile_directory, critical_error_log, print_lg
+from modules.helpers import (find_default_profile_directory, critical_error_log, print_lg,
+                            find_chrome_executable, get_chrome_major_version)
 from selenium.common.exceptions import SessionNotCreatedException
 
 def createChromeSession(isRetry: bool = False):
@@ -49,8 +50,21 @@ def createChromeSession(isRetry: bool = False):
         #     driver = uc.Chrome(driver_executable_path="C:\\Program Files\\Google\\Chrome\\chromedriver-win64\\chromedriver.exe", options=options)
         # except (FileNotFoundError, PermissionError) as e: 
         #     print_lg("(Undetected Mode) Got '{}' when using pre-installed ChromeDriver.".format(type(e).__name__)) 
+            # Match the driver to the Chrome that is actually installed. Without
+            # this, undetected-chromedriver always downloads the NEWEST driver,
+            # which fails with "This version of ChromeDriver only supports Chrome
+            # version N" every time Google promotes a new major version before the
+            # local browser has auto-updated.
+            chrome_version = get_chrome_major_version()
+            chrome_path = find_chrome_executable() or r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+            if chrome_version:
+                print_lg(f"Detected Chrome version {chrome_version}, requesting a matching ChromeDriver.")
+            else:
+                print_lg("Couldn't detect the installed Chrome version, falling back to the latest ChromeDriver.")
             print_lg("Downloading Chrome Driver... This may take some time. Undetected mode requires download every run!")
-            driver = uc.Chrome(options=options)
+            driver = uc.Chrome(options=options,
+                               browser_executable_path=chrome_path,
+                               version_main=chrome_version)
     else: driver = webdriver.Chrome(options=options) #, service=Service(executable_path="C:\\Program Files\\Google\\Chrome\\chromedriver-win64\\chromedriver.exe"))
     driver.maximize_window()
     wait = WebDriverWait(driver, 5)

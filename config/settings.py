@@ -20,7 +20,7 @@ version:    26.01.20.5.08
 # >>>>>>>>>>> LinkedIn Settings <<<<<<<<<<<
 
 # Keep the External Application tabs open?
-close_tabs = False                  # True or False, Note: True or False are case-sensitive
+close_tabs = True                 # True or False, Note: True or False are case-sensitive
 '''
 Note: RECOMMENDED TO LEAVE IT AS `True`, if you set it `False`, be sure to CLOSE ALL TABS BEFORE CLOSING THE BROWSER!!!
 '''
@@ -36,7 +36,7 @@ follow_companies = False            # True or False, Note: True or False are cas
 # connect_request_message = ""       # Leave Empty to send connection request without personalized invitation (recommended to leave it empty, since you only get 10 per month without LinkedIn Premium*)
 
 # Do you want the program to run continuously until you stop it? (Beta)
-run_non_stop = False                # True or False, Note: True or False are case-sensitive
+run_non_stop = True               # True or False, Note: True or False are case-sensitive
 '''
 Note: Will be treated as False if `run_in_background = True`
 '''
@@ -95,6 +95,40 @@ showAiErrorAlerts = False            # True or False, Note: True or False are ca
 
 
 
+
+
+
+
+
+
+# >>>>>>>>>>> NAUKRI SETTINGS <<<<<<<<<<<
+'''
+All settings below are OPTIONAL and only used by `runNaukriBot.py`.
+They are read with safe fallbacks, so removing them will NOT break anything.
+LinkedIn (`runAiBot.py`) never reads these.
+'''
+
+# Separate history files for Naukri, so LinkedIn's CSVs and Job IDs stay untouched.
+naukri_file_name = "all excels/all_applied_applications_history_naukri.csv"
+naukri_failed_file_name = "all excels/all_failed_applications_history_naukri.csv"
+
+# Maximum number of search result pages to walk per search term.
+naukri_max_pages_per_search = 5     # Only numbers greater than 0... Don't put in quotes
+
+# Maximum number of chatbot questions to attempt per application before giving up / asking you.
+naukri_max_chatbot_rounds = 15      # Only numbers greater than 0... Don't put in quotes
+
+# Naukri salary filter (CTC in lakhs per annum). Leave empty as "" to not filter by salary.
+naukri_salary_filter = ""           # "" or one of: "0to3", "3to6", "6to10", "10to15", "15to25", "25to50", "50to75", "75to100"
+
+# Override years of experience sent to Naukri's search. Leave as None to derive it
+# from `current_experience` in config/search.py.
+naukri_experience_years = None      # None or an integer like 0, 1, 2, 5 (no quotes)
+
+# Skip a job when its description could not be read from the page?
+# Recommended True: an unreadable description means the bad-word, security-clearance
+# and experience checks never ran, so applying would be applying blind.
+naukri_skip_if_no_description = True   # True or False, Note: True or False are case-sensitive
 
 
 

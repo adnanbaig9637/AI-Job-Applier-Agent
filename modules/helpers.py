@@ -18,6 +18,7 @@ version:    26.01.20.5.08
 # Imports
 
 import os
+import re
 import sys
 import json
 import pathlib
@@ -57,14 +58,146 @@ def make_directories(paths: list[str]) -> None:
             print(f'Error while creating directory "{path}": ', e)
 
 
+# def get_default_temp_profile() -> str:
+#     # Thanks to https://github.com/vinodbavage31 for suggestion!
+#     home = pathlib.Path.home()
+#     if sys.platform.startswith('win'):
+#         return "--user-data-dir=C:\\temp\\auto-job-apply-profile"
+#     elif sys.platform.startswith('linux'):
+#         return str(home / ".auto-job-apply-profile")
+#     return str(home / "Library" / "Application Support" / "Google" / "Chrome" / "auto-job-apply-profile")
+
 def get_default_temp_profile() -> str:
-    # Thanks to https://github.com/vinodbavage31 for suggestion!
+    """
+    Returns a writable temporary Chrome profile directory.
+    """
+
     home = pathlib.Path.home()
+
     if sys.platform.startswith('win'):
-        return "--user-data-dir=C:\\temp\\auto-job-apply-profile"
+        profile_dir = pathlib.Path(
+            os.environ.get(
+                "LOCALAPPDATA",
+                home / "AppData" / "Local"
+            )
+        ) / "auto-job-apply-profile"
+
     elif sys.platform.startswith('linux'):
-        return str(home / ".auto-job-apply-profile")
-    return str(home / "Library" / "Application Support" / "Google" / "Chrome" / "auto-job-apply-profile")
+        profile_dir = home / ".auto-job-apply-profile"
+
+    else:
+        profile_dir = (
+            home
+            / "Library"
+            / "Application Support"
+            / "Google"
+            / "Chrome"
+            / "auto-job-apply-profile"
+        )
+
+    profile_dir.mkdir(parents=True, exist_ok=True)
+
+    # IMPORTANT: return only the path, NOT --user-data-dir=
+    return str(profile_dir)
+
+
+def find_chrome_executable() -> str | None:
+    '''
+    Finds the installed Google Chrome binary across Windows, macOS and Linux.
+    Returns the absolute path, or `None` if Chrome could not be located.
+    '''
+    home = pathlib.Path.home()
+
+    if sys.platform.startswith('win'):
+        candidates = [
+            os.path.expandvars(r"%ProgramFiles%\Google\Chrome\Application\chrome.exe"),
+            os.path.expandvars(r"%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe"),
+            os.path.expandvars(r"%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe"),
+        ]
+    elif sys.platform == 'darwin':
+        candidates = ["/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+                      str(home / "Applications/Google Chrome.app/Contents/MacOS/Google Chrome")]
+    else:
+        candidates = ["/usr/bin/google-chrome", "/usr/bin/google-chrome-stable",
+                      "/usr/bin/chromium-browser", "/usr/bin/chromium",
+                      "/snap/bin/chromium"]
+
+    for path in candidates:
+        if path and os.path.exists(path):
+            return path
+    return None
+
+
+def get_chrome_version() -> str | None:
+    '''
+    Detects the installed Google Chrome version, e.g. `'152.0.7977.82'`.
+
+    Undetected-chromedriver downloads the *newest* ChromeDriver unless told
+    otherwise, which breaks every time Google promotes a new Chrome major
+    version before the local browser has auto-updated. Knowing the installed
+    version lets us request a matching driver instead.
+
+    Returns `None` when the version cannot be determined, in which case callers
+    should fall back to the previous "just use the latest driver" behaviour.
+    '''
+    # Windows: the registry is authoritative, the versioned install folder is a good backup.
+    if sys.platform.startswith('win'):
+        try:
+            import winreg
+            for hive, key_path, value in [
+                (winreg.HKEY_CURRENT_USER, r"Software\Google\Chrome\BLBeacon", "version"),
+                (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Google Chrome", "DisplayVersion"),
+                (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Google Chrome", "DisplayVersion"),
+            ]:
+                try:
+                    with winreg.OpenKey(hive, key_path) as key:
+                        version = winreg.QueryValueEx(key, value)[0]
+                    if version:
+                        return str(version).strip()
+                except OSError:
+                    continue
+        except Exception:
+            pass
+
+        # Backup: Chrome keeps a folder named after its version next to chrome.exe.
+        chrome_path = find_chrome_executable()
+        if chrome_path:
+            try:
+                app_dir = pathlib.Path(chrome_path).parent
+                versions = [d.name for d in app_dir.iterdir()
+                            if d.is_dir() and re.fullmatch(r'\d+(\.\d+)+', d.name)]
+                if versions:
+                    return sorted(versions, key=lambda v: [int(p) for p in v.split('.')])[-1]
+            except Exception:
+                pass
+        return None
+
+    # macOS / Linux: ask the binary directly.
+    chrome_path = find_chrome_executable()
+    if not chrome_path:
+        return None
+    try:
+        import subprocess
+        output = subprocess.run([chrome_path, "--version"], capture_output=True,
+                                text=True, timeout=10).stdout
+        match = re.search(r'(\d+(?:\.\d+)+)', output or "")
+        return match.group(1) if match else None
+    except Exception:
+        return None
+
+
+def get_chrome_major_version() -> int | None:
+    '''
+    Returns the major version number of the installed Chrome (e.g. `152`),
+    or `None` if it could not be determined.
+    '''
+    version = get_chrome_version()
+    if not version:
+        return None
+    try:
+        return int(version.split('.')[0])
+    except (ValueError, IndexError):
+        return None
 
 
 def find_default_profile_directory() -> str | None:

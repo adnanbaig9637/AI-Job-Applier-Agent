@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Set up your profile — JobPilot</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  body{ min-height:100vh; }
+  .onb-nav{ display:flex; justify-content:space-between; align-items:center; padding: 20px 48px; border-bottom: 1px solid var(--border-soft); }
+  .autosave{ font-family: var(--font-mono); font-size: 12px; color: var(--text-faint); display:flex; align-items:center; gap:6px; }
+  .autosave .dot{ width:6px;height:6px;border-radius:50%; background: var(--mint); }
+
+  .onb-layout{ display:flex; max-width: 1100px; margin: 0 auto; padding: 48px 24px 100px; gap: 56px; }
+
+  /* stepper */
+  .stepper{ width: 220px; flex-shrink:0; position: sticky; top:48px; align-self:flex-start; }
+  .step-item{ display:flex; gap:14px; padding: 14px 0; position:relative; }
+  .step-item:not(:last-child)::before{
+    content:''; position:absolute; left: 13px; top: 38px; bottom: -4px; width: 1px; background: var(--border);
+  }
+  .step-dot{
+    width: 28px; height: 28px; border-radius: 50%; flex-shrink:0;
+    border: 1px solid var(--border); background: var(--bg-panel);
+    display:flex; align-items:center; justify-content:center;
+    font-family: var(--font-mono); font-size: 12px; color: var(--text-faint); z-index:1;
+  }
+  .step-item.done .step-dot{ background: var(--mint); border-color: var(--mint); color: #08110D; }
+  .step-item.active .step-dot{ border-color: var(--mint); color: var(--mint); box-shadow: 0 0 0 3px var(--mint-bg); }
+  .step-text .t{ font-size: 14px; font-weight: 600; color: var(--text-faint); }
+  .step-item.active .step-text .t, .step-item.done .step-text .t{ color: var(--text); }
+  .step-text .s{ font-size: 12px; color: var(--text-faint); margin-top: 2px; }
+
+  .onb-content{ flex:1; max-width: 640px; }
+  .onb-form-card{ padding: 36px; }
+  .form-head{ margin-bottom: 28px; }
+  .form-head h2{ font-size: 24px; font-weight: 800; letter-spacing:-0.01em; margin-bottom: 6px; }
+  .form-head p{ color: var(--text-dim); font-size: 14px; }
+
+  .field-group{ margin-bottom: 20px; }
+  .field-row{ display:grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  label{ font-size: 13px; font-weight: 600; color: var(--text-dim); display:block; margin-bottom: 7px; }
+  .input, select.input, textarea.input{
+    width: 100%; background: var(--bg-inset); border: 1px solid var(--border);
+    border-radius: var(--radius-md); padding: 11px 14px; color: var(--text);
+    font-family: var(--font-display); font-size: 14px;
+  }
+  .input:focus, select.input:focus, textarea.input:focus{ outline:none; border-color: var(--mint); }
+  textarea.input{ resize: vertical; min-height: 80px; }
+
+  .chip-group{ display:flex; flex-wrap:wrap; gap: 8px; }
+  .chip{
+    font-size: 13px; padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border);
+    background: var(--bg-inset); color: var(--text-dim); cursor:pointer; transition: all 0.15s;
+  }
+  .chip.selected{ background: var(--mint-bg); border-color: var(--mint); color: var(--mint); }
+
+  .range-display{ display:flex; justify-content:space-between; font-family: var(--font-mono); font-size: 13px; color: var(--mint); margin-top:8px; }
+
+  /* resume upload */
+  .dropzone{
+    border: 1.5px dashed var(--border); border-radius: var(--radius-lg);
+    padding: 36px; text-align:center; background: var(--bg-inset); cursor:pointer; transition: all 0.15s;
+  }
+  .dropzone:hover{ border-color: var(--mint); background: var(--mint-bg); }
+  .dropzone .ic{ font-size: 28px; margin-bottom: 12px; color: var(--text-faint); }
+  .dropzone b{ color: var(--text); }
+  .dropzone .hint{ font-size: 12px; color: var(--text-faint); margin-top: 6px; }
+
+  .file-preview{
+    display:flex; align-items:center; gap: 14px; padding: 16px; border-radius: var(--radius-md);
+    background: var(--bg-inset); border: 1px solid var(--border); margin-top: 14px;
+  }
+  .file-preview .ic{ width:38px;height:38px;border-radius:8px; background: var(--coral-bg); color:var(--coral); display:flex;align-items:center;justify-content:center; font-size:14px; font-weight:700; font-family: var(--font-mono); }
+  .file-preview .meta .name{ font-size: 14px; font-weight:600; }
+  .file-preview .meta .size{ font-size: 12px; color: var(--text-faint); }
+  .file-preview .remove{ margin-left:auto; color: var(--text-faint); cursor:pointer; font-size: 18px; }
+
+  .form-nav{ display:flex; justify-content:space-between; margin-top: 32px; }
+
+  .exp-block{ border: 1px solid var(--border-soft); border-radius: var(--radius-md); padding: 18px; margin-bottom: 14px; }
+  .exp-block-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .exp-block-head .tag{ font-family: var(--font-mono); font-size:11px; color: var(--text-faint); }
+  .add-link{ font-size: 13px; color: var(--mint); font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px; }
+
+  .step-panel{ display:none; }
+  .step-panel.active{ display:block; }
+
+  @media (max-width: 800px){
+    .onb-layout{ flex-direction:column; gap:24px; }
+    .stepper{ width:100%; position:static; display:flex; gap:0; overflow-x:auto; }
+    .step-item{ flex-direction:column; align-items:center; text-align:center; padding: 0 16px 16px; }
+    .step-item::before{ display:none; }
+    .step-text .s{ display:none; }
+    .field-row{ grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body class="grid-texture">
+
+<div class="onb-nav">
+  <a href="index.html" class="logo"><div class="logo-mark">J</div>JobPilot</a>
+  <div class="autosave"><span class="dot"></span>Saved automatically</div>
+</div>
+
+<div class="onb-layout">
+  <div class="stepper" id="stepper">
+    <div class="step-item active" data-step="1">
+      <div class="step-dot">1</div>
+      <div class="step-text"><div class="t">Personal info</div><div class="s">Name, contact, location</div></div>
+    </div>
+    <div class="step-item" data-step="2">
+      <div class="step-dot">2</div>
+      <div class="step-text"><div class="t">Work experience</div><div class="s">Roles, companies, dates</div></div>
+    </div>
+    <div class="step-item" data-step="3">
+      <div class="step-dot">3</div>
+      <div class="step-text"><div class="t">Skills</div><div class="s">What you're strong at</div></div>
+    </div>
+    <div class="step-item" data-step="4">
+      <div class="step-dot">4</div>
+      <div class="step-text"><div class="t">Job preferences</div><div class="s">Roles, locations, salary</div></div>
+    </div>
+    <div class="step-item" data-step="5">
+      <div class="step-dot">5</div>
+      <div class="step-text"><div class="t">Resume</div><div class="s">One file, used everywhere</div></div>
+    </div>
+  </div>
+
+  <div class="onb-content">
+
+    <!-- STEP 1 -->
+    <div class="step-panel active panel onb-form-card" data-panel="1">
+      <div class="form-head"><h2>Let's start with the basics</h2><p>This appears on every application the agent submits.</p></div>
+      <div class="field-row">
+        <div class="field-group"><label>First name</label><input class="input" placeholder="Aanya">
+        </div>
+        <div class="field-group"><label>Last name</label><input class="input" placeholder="Sharma"></div>
+      </div>
+      <div class="field-group"><label>Email</label><input class="input" type="email" placeholder="aanya@example.com"></div>
+      <div class="field-row">
+        <div class="field-group"><label>Phone</label><input class="input" placeholder="+91 98765 43210"></div>
+        <div class="field-group"><label>Current location</label><input class="input" placeholder="Hyderabad, India"></div>
+      </div>
+      <div class="field-group"><label>LinkedIn profile URL</label><input class="input" placeholder="linkedin.com/in/aanyasharma"></div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step-panel panel onb-form-card" data-panel="2">
+      <div class="form-head"><h2>Your work experience</h2><p>The agent uses this to judge whether a role is a good fit.</p></div>
+
+      <div class="exp-block">
+        <div class="exp-block-head"><span class="tag">CURRENT</span><span style="color:var(--text-faint);cursor:pointer;">✕</span></div>
+        <div class="field-row">
+          <div class="field-group"><label>Job title</label><input class="input" placeholder="Senior Product Designer"></div>
+          <div class="field-group"><label>Company</label><input class="input" placeholder="Razorpay"></div>
+        </div>
+        <div class="field-row">
+          <div class="field-group"><label>Start date</label><input class="input" type="month"></div>
+          <div class="field-group"><label>End date</label><input class="input" type="month" placeholder="Present" disabled style="opacity:0.5;"></div>
+        </div>
+        <div class="field-group"><label>What did you do here?</label><textarea class="input" placeholder="Led design for the payments dashboard, shipped..."></textarea></div>
+      </div>
+
+      <div class="add-link">+ Add another role</div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step-panel panel onb-form-card" data-panel="3">
+      <div class="form-head"><h2>Skills</h2><p>Select what you're strongest at — the agent prioritizes roles that match.</p></div>
+      <div class="field-group">
+        <label>Your top skills</label>
+        <div class="chip-group">
+          <div class="chip selected">Product Design</div>
+          <div class="chip selected">Figma</div>
+          <div class="chip selected">User Research</div>
+          <div class="chip">Design Systems</div>
+          <div class="chip">Prototyping</div>
+          <div class="chip">HTML/CSS</div>
+          <div class="chip">React</div>
+          <div class="chip">+ Add custom</div>
+        </div>
+      </div>
+      <div class="field-group" style="margin-top:24px;">
+        <label>Years of experience</label>
+        <input type="range" min="0" max="20" value="6" style="width:100%;accent-color:var(--mint);">
+        <div class="range-display"><span>0 yrs</span><span>6 years</span><span>20+ yrs</span></div>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step-panel panel onb-form-card" data-panel="4">
+      <div class="form-head"><h2>Job preferences</h2><p>The agent only applies within these boundaries — anything outside gets skipped.</p></div>
+      <div class="field-group">
+        <label>Target roles</label>
+        <div class="chip-group">
+          <div class="chip selected">Product Designer</div>
+          <div class="chip selected">UX Designer</div>
+          <div class="chip">Design Lead</div>
+          <div class="chip">+ Add role</div>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Preferred locations</label>
+        <div class="chip-group">
+          <div class="chip selected">Remote</div>
+          <div class="chip selected">Bengaluru</div>
+          <div class="chip">Hyderabad</div>
+          <div class="chip">+ Add location</div>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Work mode</label>
+        <div class="chip-group">
+          <div class="chip selected">Remote</div>
+          <div class="chip">Hybrid</div>
+          <div class="chip">On-site</div>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Minimum salary expectation (₹ LPA)</label>
+        <input type="range" min="5" max="80" value="28" style="width:100%;accent-color:var(--mint);">
+        <div class="range-display"><span>₹5L</span><span>₹28L minimum</span><span>₹80L+</span></div>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step-panel panel onb-form-card" data-panel="5">
+      <div class="form-head"><h2>Upload your resume</h2><p>This gets attached to every application automatically.</p></div>
+      <div class="dropzone" id="dropzone" onclick="simulateUpload()">
+        <div class="ic">⇪</div>
+        <div><b>Click to upload</b> or drag and drop</div>
+        <div class="hint">PDF or DOCX, up to 5MB</div>
+      </div>
+      <div id="filePreviewWrap" style="display:none;">
+        <div class="file-preview">
+          <div class="ic">PDF</div>
+          <div class="meta"><div class="name">Aanya_Sharma_Resume.pdf</div><div class="size">214 KB · Uploaded just now</div></div>
+          <div class="remove" onclick="removeUpload(event)">✕</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-nav">
+      <button class="btn btn-secondary" id="prevBtn" onclick="prevStep()" style="visibility:hidden;">← Back</button>
+      <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Continue →</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('jp-theme');
+  if(saved) root.setAttribute('data-theme', saved);
+
+  let current = 1;
+  const total = 5;
+
+  function render(){
+    document.querySelectorAll('.step-item').forEach(el=>{
+      const s = parseInt(el.dataset.step);
+      el.classList.remove('active','done');
+      if(s < current) el.classList.add('done');
+      if(s === current) el.classList.add('active');
+      el.querySelector('.step-dot').textContent = s < current ? '✓' : s;
+    });
+    document.querySelectorAll('.step-panel').forEach(el=>{
+      el.classList.toggle('active', parseInt(el.dataset.panel) === current);
+    });
+    document.getElementById('prevBtn').style.visibility = current === 1 ? 'hidden' : 'visible';
+    document.getElementById('nextBtn').textContent = current === total ? 'Finish setup →' : 'Continue →';
+  }
+
+  function nextStep(){
+    if(current === total){
+      window.location.href = 'agent.html';
+      return;
+    }
+    current++;
+    render();
+  }
+  function prevStep(){
+    if(current > 1){ current--; render(); }
+  }
+
+  document.querySelectorAll('.chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      if(chip.textContent.includes('Add')) return;
+      chip.classList.toggle('selected');
+    });
+  });
+
+  function simulateUpload(){
+    document.getElementById('dropzone').style.display = 'none';
+    document.getElementById('filePreviewWrap').style.display = 'block';
+  }
+  function removeUpload(e){
+    e.stopPropagation();
+    document.getElementById('dropzone').style.display = 'block';
+    document.getElementById('filePreviewWrap').style.display = 'none';
+  }
+
+  document.querySelectorAll('.step-item').forEach(el=>{
+    el.addEventListener('click', ()=>{ current = parseInt(el.dataset.step); render(); });
+    el.style.cursor = 'pointer';
+  });
+</script>
+</body>
+</html>

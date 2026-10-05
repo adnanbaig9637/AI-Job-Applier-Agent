@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log in — JobPilot</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  body{ display:flex; flex-direction:column; min-height:100vh; }
+  .auth-nav{ padding: 24px 48px; }
+  .auth-wrap{ flex:1; display:flex; align-items:center; justify-content:center; padding: 20px; }
+  .auth-card{
+    width: 100%; max-width: 420px;
+    padding: 40px 36px;
+    text-align: center;
+  }
+  .auth-icon{
+    width: 52px; height: 52px; border-radius: 14px;
+    background: var(--mint-bg); color: var(--mint);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 22px; margin: 0 auto 22px;
+  }
+  .auth-card h1{ font-size: 22px; font-weight: 800; margin-bottom: 8px; letter-spacing:-0.01em; }
+  .auth-card p.desc{ color: var(--text-dim); font-size: 14px; margin-bottom: 28px; line-height: 1.5; }
+
+  .phone-input-row{ display:flex; gap: 8px; margin-bottom: 18px; }
+  .country-code{
+    font-family: var(--font-mono); font-size: 14px;
+    background: var(--bg-inset); border: 1px solid var(--border); border-radius: var(--radius-md);
+    padding: 0 14px; display:flex; align-items:center; color: var(--text-dim); flex-shrink:0;
+  }
+  .input{
+    width: 100%; background: var(--bg-inset); border: 1px solid var(--border);
+    border-radius: var(--radius-md); padding: 13px 14px; color: var(--text);
+    font-family: var(--font-display); font-size: 15px; transition: border-color 0.15s;
+  }
+  .input:focus{ outline:none; border-color: var(--mint); }
+  .input::placeholder{ color: var(--text-faint); }
+
+  .otp-row{ display:flex; gap: 10px; justify-content:center; margin-bottom: 20px; }
+  .otp-box{
+    width: 48px; height: 56px; text-align:center; font-size: 22px; font-family: var(--font-mono); font-weight:600;
+    background: var(--bg-inset); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text);
+  }
+  .otp-box:focus{ outline:none; border-color: var(--mint); box-shadow: 0 0 0 3px var(--mint-bg); }
+
+  .resend-row{ font-size: 13px; color: var(--text-faint); margin-bottom: 24px; }
+  .resend-row b{ color: var(--mint); cursor:pointer; font-weight:600; }
+  .resend-row .timer{ font-family: var(--font-mono); }
+
+  .step-back{ display:flex; align-items:center; gap:6px; font-size: 13px; color: var(--text-dim); margin-bottom: 20px; cursor:pointer; }
+  .step-back:hover{ color: var(--text); }
+
+  .legal{ font-size: 12px; color: var(--text-faint); margin-top: 22px; line-height: 1.5; }
+  .legal a{ color: var(--text-dim); text-decoration: underline; }
+
+  #stepOtp{ display:none; }
+</style>
+</head>
+<body class="grid-texture">
+
+<div class="auth-nav">
+  <a href="index.html" class="logo"><div class="logo-mark">J</div>JobPilot</a>
+</div>
+
+<div class="auth-wrap">
+  <div class="panel auth-card">
+
+    <div id="stepPhone">
+      <div class="auth-icon">☏</div>
+      <h1>Log in to JobPilot</h1>
+      <p class="desc">Enter your mobile number. We'll text you a 6-digit code to verify it's you.</p>
+      <div class="phone-input-row">
+        <div class="country-code">🇮🇳 +91</div>
+        <input class="input" type="tel" id="phoneInput" placeholder="98765 43210" maxlength="10">
+      </div>
+      <button class="btn btn-primary btn-lg" style="width:100%;" onclick="goToOtp()">Send verification code</button>
+      <p class="legal">By continuing you agree to JobPilot's <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
+    </div>
+
+    <div id="stepOtp">
+      <div class="step-back" onclick="backToPhone()">← Edit number</div>
+      <div class="auth-icon">✓</div>
+      <h1>Enter the code</h1>
+      <p class="desc">We sent a 6-digit code to <b id="phoneDisplay" style="color:var(--text)">+91 98765 43210</b></p>
+      <div class="otp-row">
+        <input class="otp-box" maxlength="1" inputmode="numeric">
+        <input class="otp-box" maxlength="1" inputmode="numeric">
+        <input class="otp-box" maxlength="1" inputmode="numeric">
+        <input class="otp-box" maxlength="1" inputmode="numeric">
+        <input class="otp-box" maxlength="1" inputmode="numeric">
+        <input class="otp-box" maxlength="1" inputmode="numeric">
+      </div>
+      <div class="resend-row">Didn't get it? <b id="resendBtn" onclick="resendOtp()">Resend code</b><span id="timerWrap"> in <span class="timer" id="timerCount">00:30</span></span></div>
+      <button class="btn btn-primary btn-lg" style="width:100%;" onclick="verifyOtp()">Verify and continue</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('jp-theme');
+  if(saved) root.setAttribute('data-theme', saved);
+
+  function goToOtp(){
+    const phone = document.getElementById('phoneInput').value || '98765 43210';
+    document.getElementById('phoneDisplay').textContent = '+91 ' + phone;
+    document.getElementById('stepPhone').style.display = 'none';
+    document.getElementById('stepOtp').style.display = 'block';
+    startTimer();
+    document.querySelectorAll('.otp-box')[0].focus();
+  }
+  function backToPhone(){
+    document.getElementById('stepOtp').style.display = 'none';
+    document.getElementById('stepPhone').style.display = 'block';
+  }
+
+  // OTP box auto-advance
+  const otpBoxes = document.querySelectorAll('.otp-box');
+  otpBoxes.forEach((box, i)=>{
+    box.addEventListener('input', ()=>{
+      if(box.value && i < otpBoxes.length-1) otpBoxes[i+1].focus();
+    });
+    box.addEventListener('keydown', (e)=>{
+      if(e.key === 'Backspace' && !box.value && i > 0) otpBoxes[i-1].focus();
+    });
+  });
+
+  let timerInterval;
+  function startTimer(){
+    let secs = 30;
+    document.getElementById('resendBtn').style.pointerEvents = 'none';
+    document.getElementById('resendBtn').style.opacity = '0.4';
+    document.getElementById('timerWrap').style.display = 'inline';
+    clearInterval(timerInterval);
+    timerInterval = setInterval(()=>{
+      secs--;
+      const m = String(Math.floor(secs/60)).padStart(2,'0');
+      const s = String(secs%60).padStart(2,'0');
+      document.getElementById('timerCount').textContent = `${m}:${s}`;
+      if(secs <= 0){
+        clearInterval(timerInterval);
+        document.getElementById('timerWrap').style.display = 'none';
+        document.getElementById('resendBtn').style.pointerEvents = 'auto';
+        document.getElementById('resendBtn').style.opacity = '1';
+      }
+    }, 1000);
+  }
+  function resendOtp(){ startTimer(); }
+
+  function verifyOtp(){
+    window.location.href = 'onboarding.html';
+  }
+</script>
+</body>
+</html>

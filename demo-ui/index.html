@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JobPilot — Your agent applies. You stay in control.</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .hero{
+    position: relative;
+    padding: 64px 48px 0;
+    overflow: hidden;
+  }
+  .hero-inner{
+    max-width: 1180px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr; gap: 28px;
+    padding-bottom: 80px;
+  }
+  .hero-kicker{ display:flex; justify-content:center; margin-bottom: 8px;}
+  .hero h1{
+    font-size: 64px; line-height: 1.04; font-weight: 800;
+    text-align: center; letter-spacing: -0.02em;
+    max-width: 880px; margin: 0 auto;
+  }
+  .hero h1 .accent{ color: var(--mint); }
+  .hero p.sub{
+    text-align: center; font-size: 18px; color: var(--text-dim);
+    max-width: 560px; margin: 0 auto; line-height: 1.55;
+  }
+  .hero-ctas{ display:flex; gap: 14px; justify-content:center; margin-top: 8px; }
+  .hero-note{ text-align:center; font-size: 13px; color: var(--text-faint); font-family: var(--font-mono); }
+
+  /* the signature element: a live mock console window showing the agent's reasoning feed,
+     framed like a real control terminal. This IS the thesis of the product. */
+  .console-frame{
+    max-width: 920px; margin: 48px auto 0;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+    background: var(--bg-raised);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  .console-bar{
+    display:flex; align-items:center; justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border-soft);
+    background: var(--bg-panel);
+  }
+  .console-dots{ display:flex; gap:7px; }
+  .console-dots span{ width:11px; height:11px; border-radius:50%; background: var(--border); }
+  .console-title{ font-family: var(--font-mono); font-size: 12.5px; color: var(--text-faint); }
+  .console-live{ display:flex; align-items:center; gap:7px; font-family: var(--font-mono); font-size: 12px; color: var(--mint); }
+  .console-live .dot{ width:7px; height:7px; border-radius:50%; background: var(--mint); box-shadow: 0 0 8px var(--mint); animation: pulse 1.6s infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+
+  .console-body{ display:grid; grid-template-columns: 1.3fr 1fr; min-height: 320px; }
+  .console-browser{
+    border-right: 1px solid var(--border-soft);
+    padding: 22px; position: relative;
+  }
+  .browser-chrome{
+    background: var(--bg-inset); border: 1px solid var(--border-soft); border-radius: 10px;
+    height: 100%; padding: 14px;
+  }
+  .browser-url{
+    font-family: var(--font-mono); font-size: 11.5px; color: var(--text-faint);
+    background: var(--bg-panel); border-radius: 6px; padding: 7px 12px; margin-bottom: 16px;
+    border: 1px solid var(--border-soft);
+  }
+  .job-card-mini{
+    background: var(--bg-panel); border: 1px solid var(--border-soft); border-radius: 10px;
+    padding: 14px; margin-bottom: 10px;
+  }
+  .job-card-mini .jt{ font-size: 13.5px; font-weight: 600; margin-bottom: 3px;}
+  .job-card-mini .jc{ font-size: 12px; color: var(--text-dim); }
+  .job-card-mini.active{ border-color: var(--mint); box-shadow: 0 0 0 1px var(--mint) inset; }
+  .scan-line{
+    position:absolute; left:14px; right:14px; height: 2px; background: linear-gradient(90deg, transparent, var(--mint), transparent);
+    animation: scan 2.4s ease-in-out infinite; opacity: 0.7;
+  }
+  @keyframes scan{ 0%{ top: 60px; } 50%{ top: 200px;} 100%{ top: 60px; } }
+
+  .console-reasoning{ padding: 20px; display:flex; flex-direction:column; gap: 12px; }
+  .reasoning-line{ display:flex; gap: 10px; font-size: 12.5px; }
+  .reasoning-line .tag{ font-family: var(--font-mono); color: var(--text-faint); flex-shrink:0; }
+  .reasoning-line .txt{ color: var(--text-dim); line-height: 1.5; }
+  .reasoning-line.success .txt{ color: var(--text); }
+  .reasoning-line .ic{ color: var(--mint); }
+
+  /* sections */
+  section{ padding: 100px 48px; max-width: 1180px; margin: 0 auto; }
+  .section-head{ text-align:center; max-width: 600px; margin: 0 auto 56px; }
+  .section-head h2{ font-size: 38px; font-weight: 800; letter-spacing: -0.02em; margin-top: 14px; }
+  .section-head p{ color: var(--text-dim); font-size: 16px; margin-top: 12px; line-height: 1.6; }
+  .section-head .eyebrow{ justify-content:center; }
+
+  .flow{ display:grid; grid-template-columns: repeat(4,1fr); gap: 0; position: relative; }
+  .flow::before{
+    content:''; position:absolute; top: 27px; left: 60px; right: 60px; height: 1px;
+    background: repeating-linear-gradient(90deg, var(--border) 0 8px, transparent 8px 16px);
+  }
+  .flow-step{ text-align:center; padding: 0 16px; position: relative; }
+  .flow-num{
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--bg-panel); border: 1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-family: var(--font-mono); font-weight: 600; font-size: 16px;
+    margin: 0 auto 20px; position: relative; z-index: 2;
+  }
+  .flow-step:nth-child(3) .flow-num, .flow-step:nth-child(4) .flow-num{ color: var(--mint); border-color: var(--mint); }
+  .flow-step h3{ font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .flow-step p{ font-size: 13.5px; color: var(--text-dim); line-height: 1.5; }
+
+  .feature-grid{ display:grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+  .feature-card{ padding: 28px; }
+  .feature-card .ic-box{
+    width: 40px; height:40px; border-radius: 10px; background: var(--mint-bg);
+    display:flex; align-items:center; justify-content:center; margin-bottom: 18px; color: var(--mint);
+  }
+  .feature-card h3{ font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .feature-card p{ font-size: 13.5px; color: var(--text-dim); line-height: 1.6; }
+
+  .stats-strip{
+    display:grid; grid-template-columns: repeat(4,1fr); gap: 1px;
+    background: var(--border-soft); border-radius: var(--radius-lg); overflow:hidden;
+    border: 1px solid var(--border-soft);
+  }
+  .stat-cell{ background: var(--bg-panel); padding: 32px 24px; text-align:center; }
+  .stat-cell .num{ font-family: var(--font-mono); font-size: 32px; font-weight: 700; color: var(--mint); }
+  .stat-cell .lab{ font-size: 12.5px; color: var(--text-dim); margin-top: 6px; }
+
+  .faq-item{ border-bottom: 1px solid var(--border-soft); padding: 20px 0; }
+  .faq-q{ display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-weight:600; font-size:15px; }
+  .faq-a{ font-size: 14px; color: var(--text-dim); line-height: 1.6; margin-top: 12px; display:none; max-width: 700px; }
+  .faq-item.open .faq-a{ display:block; }
+  .faq-item.open .faq-q .chev{ transform: rotate(180deg); }
+  .faq-q .chev{ transition: transform 0.2s; color: var(--text-faint); }
+
+  .cta-band{
+    text-align:center; padding: 72px 48px; border-radius: var(--radius-xl);
+    background: linear-gradient(160deg, var(--bg-panel), var(--bg-raised));
+    border: 1px solid var(--border);
+    max-width: 1180px; margin: 0 auto 100px;
+  }
+  .cta-band h2{ font-size: 32px; font-weight: 800; margin-bottom: 14px;}
+  .cta-band p{ color: var(--text-dim); margin-bottom: 28px; }
+
+  footer{ border-top: 1px solid var(--border-soft); padding: 32px 48px; display:flex; justify-content:space-between; align-items:center; font-size: 13px; color: var(--text-faint); font-family: var(--font-mono); }
+
+  @media (max-width: 900px){
+    .hero h1{ font-size: 38px; }
+    .console-body{ grid-template-columns: 1fr; }
+    .flow, .feature-grid, .stats-strip{ grid-template-columns: 1fr 1fr; }
+    section{ padding: 64px 24px; }
+    .navbar{ padding: 16px 20px; }
+    .nav-links{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo"><div class="logo-mark">J</div>JobPilot</div>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <div class="nav-actions">
+    <div class="theme-toggle" id="themeToggle"></div>
+    <a href="auth.html" class="btn btn-ghost btn-sm">Log in</a>
+    <a href="auth.html" class="btn btn-primary btn-sm">Get started</a>
+  </div>
+</nav>
+
+<div class="hero grid-texture">
+  <div class="hero-inner">
+    <div class="hero-kicker"><span class="eyebrow">Agent online · applying around the clock</span></div>
+    <h1>Your agent applies<br>to jobs. <span class="accent">You stay in the loop.</span></h1>
+    <p class="sub">Give JobPilot your resume and preferences once. It browses LinkedIn, fills every application, and asks for you only when a human touch is actually needed.</p>
+    <div class="hero-ctas">
+      <a href="auth.html" class="btn btn-primary btn-lg">Get started — it's free</a>
+      <a href="agent.html" class="btn btn-secondary btn-lg">See the agent in action</a>
+    </div>
+    <div class="hero-note">No credit card · Takes 4 minutes to set up</div>
+
+    <!-- SIGNATURE ELEMENT: live console mock -->
+    <div class="console-frame">
+      <div class="console-bar">
+        <div class="console-dots"><span></span><span></span><span></span></div>
+        <div class="console-title">jobpilot — agent session #2291</div>
+        <div class="console-live"><span class="dot"></span>LIVE</div>
+      </div>
+      <div class="console-body">
+        <div class="console-browser">
+          <div class="scan-line"></div>
+          <div class="browser-chrome">
+            <div class="browser-url">🔒 linkedin.com/jobs/search?keywords=product%20designer</div>
+            <div class="job-card-mini active">
+              <div class="jt">Senior Product Designer</div>
+              <div class="jc">Stripe · Remote · Easy Apply</div>
+            </div>
+            <div class="job-card-mini">
+              <div class="jt">Product Designer II</div>
+              <div class="jc">Figma · San Francisco</div>
+            </div>
+            <div class="job-card-mini">
+              <div class="jt">Staff Designer, Platform</div>
+              <div class="jc">Notion · Remote</div>
+            </div>
+          </div>
+        </div>
+        <div class="console-reasoning">
+          <div class="reasoning-line"><span class="tag ic mono">→</span><span class="txt">Matched 3 new roles against your saved preferences</span></div>
+          <div class="reasoning-line"><span class="tag ic mono">→</span><span class="txt">Opening "Senior Product Designer" at Stripe</span></div>
+          <div class="reasoning-line"><span class="tag ic mono">→</span><span class="txt">Resume + cover note auto-filled from your profile</span></div>
+          <div class="reasoning-line success"><span class="tag ic mono">✓</span><span class="txt"><b>Application submitted</b> to Stripe</span></div>
+          <div class="reasoning-line"><span class="tag ic mono">→</span><span class="txt">Checking next match: Product Designer II at Figma</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ticker-strip">
+  <div class="ticker-track" id="tickerTrack"></div>
+</div>
+
+<section id="how">
+  <div class="section-head">
+    <span class="eyebrow">The process</span>
+    <h2>Set up once. The agent runs the rest.</h2>
+    <p>Four steps, then the only decision left is whether to say yes to an interview.</p>
+  </div>
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-num">01</div>
+      <h3>Add your profile</h3>
+      <p>Experience, skills, and the roles, locations, and pay you'll actually accept.</p>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">02</div>
+      <h3>Upload your resume</h3>
+      <p>One file. The agent reuses it for every application it submits.</p>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">03</div>
+      <h3>Agent applies</h3>
+      <p>It searches, filters, fills, and submits — and pauses only for logins or CAPTCHAs.</p>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">04</div>
+      <h3>Review the results</h3>
+      <p>See exactly what was applied, skipped, or failed, with a reason for each.</p>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="section-head">
+    <span class="eyebrow">Why it's different</span>
+    <h2>Automation you can actually watch</h2>
+    <p>Most bots run as a black box. JobPilot shows its work in real time, and hands control back the moment it matters.</p>
+  </div>
+  <div class="feature-grid">
+    <div class="panel feature-card">
+      <div class="ic-box">▣</div>
+      <h3>A visible browser, not a black box</h3>
+      <p>Every click and keystroke happens in a real Chrome window you can watch — or take over — at any time.</p>
+    </div>
+    <div class="panel feature-card">
+      <div class="ic-box">⟲</div>
+      <h3>Live reasoning feed</h3>
+      <p>A side panel narrates every decision the agent makes, in plain language, as it makes it.</p>
+    </div>
+    <div class="panel feature-card">
+      <div class="ic-box">⏸</div>
+      <h3>Human-in-the-loop by design</h3>
+      <p>Logins, CAPTCHAs, and security checks get handed straight to you. The agent waits — it never guesses.</p>
+    </div>
+    <div class="panel feature-card">
+      <div class="ic-box">■</div>
+      <h3>Stop, anytime</h3>
+      <p>One button halts the agent mid-run. Nothing happens after you click it.</p>
+    </div>
+    <div class="panel feature-card">
+      <div class="ic-box">▤</div>
+      <h3>A full paper trail</h3>
+      <p>Every application — applied, skipped, rejected, or failed — is logged with a reason, searchable later.</p>
+    </div>
+    <div class="panel feature-card">
+      <div class="ic-box">✎</div>
+      <h3>Edit anything, anytime</h3>
+      <p>Update your resume or preferences between runs. Changes apply to the very next application.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="stats-strip">
+    <div class="stat-cell"><div class="num">42,318</div><div class="lab">Applications submitted</div></div>
+    <div class="stat-cell"><div class="num">11.4 min</div><div class="lab">Avg. time to set up</div></div>
+    <div class="stat-cell"><div class="num">96%</div><div class="lab">Submitted without intervention</div></div>
+    <div class="stat-cell"><div class="num">3,920</div><div class="lab">Active job seekers</div></div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="section-head">
+    <span class="eyebrow">Questions</span>
+    <h2>Before you hand over the wheel</h2>
+  </div>
+  <div style="max-width:760px;margin:0 auto;">
+    <div class="faq-item open">
+      <div class="faq-q">Can I watch the agent while it works? <span class="chev">⌄</span></div>
+      <div class="faq-a">Yes — the Agent Control Room shows a live browser window plus a side panel narrating every decision as it happens. Nothing runs invisibly.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What happens when LinkedIn asks me to log in? <span class="chev">⌄</span></div>
+      <div class="faq-a">The agent pauses and hands control to you directly inside the same window. Once you've logged in, it picks up exactly where it left off.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Can I stop it mid-run? <span class="chev">⌄</span></div>
+      <div class="faq-a">Always. The stop control is visible on every screen of the Control Room and takes effect immediately.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Will it apply to jobs I wouldn't want? <span class="chev">⌄</span></div>
+      <div class="faq-a">No — it only applies within the role, location, and salary preferences you set, and skips anything outside that range with a logged reason.</div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-band">
+  <h2>Set it up once. Let it work tonight.</h2>
+  <p>Most people finish onboarding before their coffee gets cold.</p>
+  <a href="auth.html" class="btn btn-primary btn-lg">Get started — it's free</a>
+</div>
+
+<footer>
+  <span>© 2026 JobPilot</span>
+  <span>Built for job seekers, not recruiters</span>
+</footer>
+
+<script>
+  // theme toggle persistence
+  const root = document.documentElement;
+  const saved = localStorage.getItem('jp-theme');
+  if(saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', ()=>{
+    const cur = root.getAttribute('data-theme');
+    const next = cur === 'light' ? 'dark' : 'light';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('jp-theme', next);
+  });
+
+  // faq accordion
+  document.querySelectorAll('.faq-item').forEach(item=>{
+    item.querySelector('.faq-q').addEventListener('click', ()=>{
+      item.classList.toggle('open');
+    });
+  });
+
+  // ticker content (signature element), duplicated for seamless loop
+  const tickerData = [
+    {label:'Stripe · Senior Product Designer', status:'Applied', up:true},
+    {label:'Figma · Product Designer II', status:'Skipped — salary below min', up:false},
+    {label:'Notion · Staff Designer', status:'Applied', up:true},
+    {label:'Airbnb · UX Researcher', status:'Failed — form error', up:false},
+    {label:'Ramp · Brand Designer', status:'Applied', up:true},
+    {label:'Linear · Product Designer', status:'Rejected by company', up:false},
+  ];
+  const track = document.getElementById('tickerTrack');
+  function buildTicker(){
+    let html = '';
+    for(let r=0;r<2;r++){
+      tickerData.forEach(t=>{
+        html += `<div class="ticker-item ${t.up?'up':'down'}"><b>${t.label}</b> ${t.status}</div>`;
+      });
+    }
+    track.innerHTML = html;
+  }
+  buildTicker();
+</script>
+</body>
+</html>

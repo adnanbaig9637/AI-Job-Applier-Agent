@@ -19,8 +19,14 @@ version:    24.12.3.10.30
 
 
 # Login Credentials for LinkedIn (Optional)
-username = "username@example.com"       # Enter your username in the quotes
-password = "example_password"           # Enter your password in the quotes
+username = "adnanbaig2002@gmail.com"       # Enter your username in the quotes
+password = "C@mp@Col@#786"           # Enter your password in the quotes
+
+
+# Login Credentials for Naukri (Optional, only used by `runNaukriBot.py`)
+# Leave them as "" to reuse the `username` / `password` above.
+naukri_username = "adnanbaig2002@gmail.com"                    # Enter your Naukri email/username in the quotes, or leave "" to reuse `username`
+naukri_password = "@dnanBaig2002"                    # Enter your Naukri password in the quotes, or leave "" to reuse `password`
 
 
 ## Artificial Intelligence (Beta Not-Recommended)
