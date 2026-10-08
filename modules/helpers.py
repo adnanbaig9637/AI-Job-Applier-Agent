@@ -23,10 +23,10 @@ import sys
 import json
 import pathlib
 
-from time import sleep
+from time import sleep, monotonic
 from random import randint
 from datetime import datetime, timedelta
-from pyautogui import alert
+from modules.dialogs import alert
 from pprint import pprint
 
 from config.settings import logs_folder_path
@@ -299,21 +299,43 @@ def buffer(speed: int=0) -> None:
         return sleep(randint(18,round(speed)*10)*0.1)
     
 
-def manual_login_retry(is_logged_in: callable, limit: int = 2) -> None:
+def manual_login_retry(is_logged_in: callable, limit: int = 2, *,
+                       timeout: float = 300, poll_interval: float = 2,
+                       poll_is_logged_in: callable = None) -> bool:
+    '''Ask for manual login, then detect authentication even without Tk dialogs.
+
+    Returns False when the bounded polling period expires; callers must not
+    start applying until this returns True. Poll callbacks should inspect the
+    current page without navigating away from the user's login form.
     '''
-    Function to ask and validate manual login
-    '''
-    count = 0
-    while not is_logged_in():
-        from pyautogui import alert
-        print_lg("Seems like you're not logged in!")
-        button = "Confirm Login"
-        message = 'After you successfully Log In, please click "{}" button below.'.format(button)
-        if count > limit:
-            button = "Skip Confirmation"
-            message = 'If you\'re seeing this message even after you logged in, Click "{}". Seems like auto login confirmation failed!'.format(button)
-        count += 1
-        if alert(message, "Login Required", button) and count > limit: return
+    if poll_interval <= 0:
+        raise ValueError("poll_interval must be positive")
+    if is_logged_in():
+        return True
+
+    print_lg("Please finish logging in in the open browser window.")
+    for _ in range(max(0, limit)):
+        response = alert(
+            'After you successfully log in, click "Confirm Login" below.',
+            "Login Required", "Confirm Login")
+        if response is None:
+            break
+        if is_logged_in():
+            return True
+
+    poll = poll_is_logged_in or is_logged_in
+    print_lg(f"Waiting up to {timeout:g} seconds for manual login. "
+             "Complete any verification in the browser; login is detected automatically.")
+    deadline = monotonic() + max(0, timeout)
+    while True:
+        remaining = deadline - monotonic()
+        if remaining <= 0:
+            print_lg("Manual login was not detected before the timeout.")
+            return False
+        sleep(min(poll_interval, remaining))
+        if poll():
+            print_lg("Login detected; continuing.")
+            return True
 
 
 

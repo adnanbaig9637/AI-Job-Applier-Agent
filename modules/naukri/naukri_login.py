@@ -112,7 +112,8 @@ def _await_manual_login(driver: WebDriver, limit: int = 2) -> None:
     fall back to polling the page and logging progress instead of failing.
     '''
     try:
-        manual_login_retry(lambda: _is_logged_in_after_navigation(driver), limit)
+        manual_login_retry(lambda: _is_logged_in_after_navigation(driver), limit,
+                           poll_is_logged_in=lambda: is_logged_in_NK(driver))
         return
     except Exception as e:
         print_lg("Couldn't show the login dialog "

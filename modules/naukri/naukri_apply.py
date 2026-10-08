@@ -43,6 +43,7 @@ stats = {
     "applied": 0,          # applications submitted on Naukri
     "external": 0,         # "Apply on company site" links collected
     "failed": 0,
+    "search_failed": 0,   # search loading failures, distinct from empty results
     "skipped": 0,
 }
 
@@ -466,6 +467,11 @@ def process_job(driver: WebDriver, naukri_tab: str, details: dict, applied_jobs:
         return False
 
     # Cheap experience gate straight off the card, before we spend a page load.
+    if not naukri_search.matches_experience_range(details.get("experience_text", "")):
+        reason = f'Outside desired experience range (card says "{details.get("experience_text")}")'
+        print_lg(f'Skipping "{title} | {company}": {reason}.')
+        _note_skip(rejected_jobs, job_id, reason)
+        return False
     min_years = answers.extract_min_years_from_range(details.get("experience_text", ""))
     if current_experience > -1 and min_years is not None and min_years > current_experience:
         print_lg(f'Skipping "{title} | {company}": needs {min_years}+ yrs '
@@ -683,6 +689,13 @@ def apply_to_jobs(driver: WebDriver, wait, search_terms: list[str], ai_client=No
                                    "Unknown", "Not Available")
                         stats["failed"] += 1
 
+        except naukri_search.NaukriAccessError as e:
+            stats["search_failed"] += 1
+            print_lg(str(e))
+            return
+        except naukri_search.NaukriSearchError as e:
+            stats["search_failed"] += 1
+            print_lg(str(e))
         except (NoSuchWindowException, WebDriverException) as e:
             print_lg("Browser window closed or session is invalid. Ending the Naukri application process.", e)
             raise

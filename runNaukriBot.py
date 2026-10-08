@@ -4,9 +4,9 @@ Naukri job application automation.
 Run with:
     python runNaukriBot.py
 
-This is the Naukri sibling of `runAiBot.py`. It reuses the exact same browser
-setup, helpers, AI providers and `config/*.py` configuration, and follows the
-same flow:
+This is the Naukri sibling of `runAiBot.py`. It reuses the browser setup,
+helpers, AI providers and shared profile configuration, with optional Naukri
+search preferences in `config/naukri_filter_config.py`, and follows this flow:
 
   Launch Chrome -> open Naukri -> detect login -> let the human log in if
   needed -> search using the configured criteria -> screen each job -> apply ->
@@ -23,7 +23,6 @@ import pyautogui
 from selenium.common.exceptions import NoSuchWindowException, WebDriverException
 
 from config.questions import default_resume_path
-from config.search import search_terms, date_posted, sort_by
 from config.secrets import use_AI, ai_provider
 from config.settings import (
     run_in_background, run_non_stop, alternate_sortby, cycle_date_posted,
@@ -35,6 +34,7 @@ from modules.helpers import print_lg, buffer, sleep, critical_error_log, make_di
 from modules.validator import validate_config
 from modules import relevance
 from modules.naukri import naukri_config, naukri_apply
+from modules.naukri.naukri_dialogs import alert
 from modules.naukri.naukri_login import ensure_logged_in
 
 if use_AI:
@@ -52,8 +52,8 @@ aiClient = None
 naukri_tab = None
 
 # The run loop mutates these locally, exactly like the LinkedIn bot does.
-current_date_posted = date_posted
-current_sort_by = sort_by
+current_date_posted = naukri_config.get_date_posted()
+current_sort_by = naukri_config.get_sort_by()
 
 
 def create_ai_client():
@@ -93,7 +93,7 @@ def run(total_runs: int) -> int:
     print_lg(f"Cycle number: {total_runs}")
     print_lg(f"Currently looking for Naukri jobs posted within '{current_date_posted}' "
              f"and sorting them by '{current_sort_by}'")
-    naukri_apply.apply_to_jobs(driver, wait, search_terms, aiClient,
+    naukri_apply.apply_to_jobs(driver, wait, naukri_config.get_search_terms(), aiClient,
                                sort_by=current_sort_by, date_posted=current_date_posted)
     print_lg("########################################################################################################################\n")
     # Only cool down between cycles. A single run has nothing left to wait for.
@@ -156,15 +156,17 @@ def main() -> None:
         print_lg("Browser window closed or session is invalid. Exiting.", e)
     except Exception as e:
         critical_error_log("In Naukri Applier Main", e)
-        pyautogui.alert(str(e), alert_title)
+        alert(str(e), alert_title)
     finally:
         applied = naukri_apply.stats["applied"]
         external = naukri_apply.stats["external"]
         failed = naukri_apply.stats["failed"]
         skipped = naukri_apply.stats["skipped"]
+        search_failed = naukri_apply.stats.get("search_failed", 0)
         summary = ("Total runs: {}\nJobs applied on Naukri: {}\nExternal job links collected: {}\n"
                    "Total applied or collected: {}\nFailed jobs: {}\nIrrelevant jobs skipped: {}\n"
-                   ).format(total_runs, applied, external, applied + external, failed, skipped)
+                   "Failed searches: {}\n"
+                   ).format(total_runs, applied, external, applied + external, failed, skipped, search_failed)
         print_lg(summary)
         print_lg("\n\nTotal runs:                     {}".format(total_runs))
         print_lg("Jobs applied on Naukri:         {}".format(applied))
@@ -173,6 +175,7 @@ def main() -> None:
         print_lg("Total applied or collected:     {}".format(applied + external))
         print_lg("\nFailed jobs:                    {}".format(failed))
         print_lg("Irrelevant jobs skipped:        {}\n".format(skipped))
+        print_lg("Failed searches:               {}\n".format(search_failed))
         if naukri_apply.skip_reasons:
             print_lg("Why jobs were skipped (most common first):")
             for reason, count in sorted(naukri_apply.skip_reasons.items(),
@@ -191,7 +194,7 @@ def main() -> None:
             "Success is not final, failure is not fatal, It is the courage to continue that counts. - Winston Churchill",
             "Opportunities don't happen, you create them. - Chris Grosser",
         ])
-        pyautogui.alert(f"{quote}\n\n\nSummary:\n{summary}", "Exiting..")
+        alert(f"{quote}\n\n\nSummary:\n{summary}", "Exiting..")
         print_lg("Closing the browser...")
 
         close_ai_client(aiClient)

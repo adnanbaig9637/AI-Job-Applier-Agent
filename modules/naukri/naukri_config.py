@@ -1,14 +1,15 @@
 '''
 Naukri configuration adapter.
 
-Reads the *existing* project configuration (`config/search.py`,
-`config/settings.py`, `config/secrets.py`) and translates it into the values
-Naukri's search understands. Every Naukri-only setting is read through
-`_opt()` with a default, so the bot keeps working even if a user's config
-files predate the Naukri feature.
+Reads optional Naukri search preferences from `config/naukri_filter_config.py`,
+falling back to the existing project configuration when that file or a setting
+is absent. These preferences affect job searches, never applicant answers or
+the actual experience recorded in the shared profile.
 
 Nothing here is imported by `runAiBot.py`; LinkedIn is unaffected.
 '''
+
+from importlib import import_module
 
 from config import search as _search
 from config import settings as _settings
@@ -17,10 +18,71 @@ from config import secrets as _secrets
 from modules.helpers import print_lg
 
 
+try:
+    _filters = import_module("config.naukri_filter_config")
+except ModuleNotFoundError as error:
+    if error.name != "config.naukri_filter_config":
+        raise
+    _filters = None
+
+
 def _opt(module, name: str, default):
     '''Reads an optional config value, falling back to `default` when absent or None.'''
     value = getattr(module, name, None)
     return default if value is None else value
+
+
+def _search_value(name: str, default=None):
+    '''Naukri preference when present, otherwise the existing shared setting.'''
+    return _opt(_filters, name, _opt(_search, name, default))
+
+
+def _string_list(value, name: str) -> list[str]:
+    if isinstance(value, str):
+        value = [value]
+    if not isinstance(value, (list, tuple)) or any(not isinstance(item, str) for item in value):
+        raise ValueError(f"{name} must be a string or a list of strings")
+    return list(dict.fromkeys(item.strip() for item in value if item.strip()))
+
+
+def get_search_terms() -> list[str]:
+    return _string_list(_search_value("search_terms", []), "search_terms")
+
+
+def get_search_locations() -> list[str]:
+    locations = getattr(_filters, "search_locations", None)
+    if locations is None:
+        locations = _search_value("search_location", "")
+    if isinstance(locations, str):
+        locations = locations.split(",")
+    return _string_list(locations, "search_locations")
+
+
+def get_search_location() -> str:
+    return ", ".join(get_search_locations())
+
+
+def get_search_experience_range() -> tuple[int, int] | None:
+    '''Desired job requirement range, separate from the applicant's experience.'''
+    minimum = getattr(_filters, "experience_min", None)
+    maximum = getattr(_filters, "experience_max", None)
+    if minimum is None and maximum is None:
+        return None
+    minimum = 0 if minimum is None else minimum
+    maximum = minimum if maximum is None else maximum
+    if (isinstance(minimum, bool) or isinstance(maximum, bool)
+            or not isinstance(minimum, int) or not isinstance(maximum, int)
+            or minimum < 0 or maximum < minimum):
+        raise ValueError("Naukri experience_min/max must be whole years with 0 <= min <= max")
+    return minimum, maximum
+
+
+def get_date_posted() -> str:
+    return _search_value("date_posted", "")
+
+
+def get_sort_by() -> str:
+    return _search_value("sort_by", "")
 
 
 #< ------ Naukri-only settings (all optional, backward compatible) ------
@@ -113,9 +175,13 @@ EXPERIENCE_LEVEL_YEARS_MAP = {
 def get_experience_years() -> int | None:
     '''
     Years of experience to send to Naukri's search.
-    Priority: `naukri_experience_years` -> `current_experience` -> lowest matching
-    `experience_level`. Returns `None` when experience should not be filtered on.
+    Priority: Naukri search range minimum -> `naukri_experience_years` -> shared
+    `current_experience` -> lowest matching `experience_level`.
+    This is a search parameter only, never the applicant's claimed experience.
     '''
+    preferred_range = get_search_experience_range()
+    if preferred_range is not None:
+        return preferred_range[0]
     if _experience_override is not None:
         try:
             return max(0, int(_experience_override))
@@ -133,26 +199,26 @@ def get_experience_years() -> int | None:
 
 def get_job_age(date_posted: str | None = None) -> int | None:
     '''Naukri `jobAge` (in days) derived from `date_posted`. `None` means no filter.'''
-    value = getattr(_search, 'date_posted', "") if date_posted is None else date_posted
+    value = get_date_posted() if date_posted is None else date_posted
     return JOB_AGE_MAP.get(value)
 
 
 def get_sort(sort_by: str | None = None) -> str | None:
     '''Naukri `sort` query value derived from `sort_by`. `None` means no explicit sort.'''
-    value = getattr(_search, 'sort_by', "") if sort_by is None else sort_by
+    value = get_sort_by() if sort_by is None else sort_by
     return SORT_MAP.get(value)
 
 
 def get_sort_ui_label(sort_by: str | None = None) -> str | None:
     '''Visible sort-dropdown label, used when the URL parameter did not take effect.'''
-    value = getattr(_search, 'sort_by', "") if sort_by is None else sort_by
+    value = get_sort_by() if sort_by is None else sort_by
     return SORT_UI_LABEL_MAP.get(value)
 
 
 def get_work_modes() -> list[str]:
     '''Naukri `wfhType` values derived from `on_site`. Empty list means no filter.'''
-    modes = getattr(_search, 'on_site', []) or []
-    values = [WORK_MODE_MAP[mode] for mode in modes if mode in WORK_MODE_MAP]
+    modes = _string_list(_search_value('on_site', []), "on_site")
+    values = list(dict.fromkeys(WORK_MODE_MAP[mode] for mode in modes if mode in WORK_MODE_MAP))
     # Selecting every mode is the same as selecting none, and a shorter URL is safer.
     if len(values) >= len(WORK_MODE_MAP):
         return []
@@ -161,19 +227,21 @@ def get_work_modes() -> list[str]:
 
 def get_job_type_labels() -> list[str]:
     '''Visible "Employment type" filter labels derived from `job_type`.'''
-    types = getattr(_search, 'job_type', []) or []
+    types = _string_list(_search_value('job_type', []), "job_type")
     return [JOB_TYPE_UI_LABEL_MAP[t] for t in types if t in JOB_TYPE_UI_LABEL_MAP]
 
 
 def describe() -> str:
     '''Human readable summary of the resolved Naukri search configuration, for the logs.'''
     return (
-        f"  Search terms      : {getattr(_search, 'search_terms', [])}\n"
-        f"  Search location   : '{getattr(_search, 'search_location', '')}'\n"
-        f"  Experience (yrs)  : {get_experience_years()}\n"
+        f"  Search terms      : {get_search_terms()}\n"
+        f"  Search locations  : {get_search_locations()}\n"
+        f"  Desired job experience range (yrs): {get_search_experience_range()}\n"
+        f"  Search experience parameter (yrs): {get_experience_years()}\n"
+        f"  Applicant experience (unchanged): {getattr(_search, 'current_experience', -1)}\n"
         f"  Job age (days)    : {get_job_age()}\n"
-        f"  Sort              : {getattr(_search, 'sort_by', '')} -> '{get_sort()}'\n"
-        f"  Work modes        : {getattr(_search, 'on_site', [])} -> {get_work_modes()}\n"
+        f"  Sort              : {get_sort_by()} -> '{get_sort()}'\n"
+        f"  Work modes        : {_search_value('on_site', [])} -> {get_work_modes()}\n"
         f"  Employment types  : {get_job_type_labels()}\n"
         f"  Salary filter     : '{salary_filter}'\n"
         f"  Apply on Naukri only (easy_apply_only): {getattr(_search, 'easy_apply_only', False)}\n"

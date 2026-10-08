@@ -14,8 +14,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import StaleElementReferenceException, TimeoutException
 
-from config.search import search_location
 from config.settings import click_gap
 
 from modules.helpers import print_lg, buffer, sleep
@@ -24,6 +24,14 @@ from modules.naukri import naukri_config
 
 
 NAUKRI_BASE = "https://www.naukri.com"
+
+
+class NaukriSearchError(RuntimeError):
+    '''The search page failed to load; this is not an empty job search.'''
+
+
+class NaukriAccessError(NaukriSearchError):
+    '''Naukri requires manual sign-in or verification before searching.'''
 
 # Ordered candidates for the container of a single job result.
 JOB_CARD_SELECTORS = [
@@ -53,21 +61,24 @@ def _slugify(text: str) -> str:
 
 
 def build_search_url(keyword: str, page: int = 1,
-                     sort_by: str | None = None, date_posted: str | None = None) -> str:
+                     sort_by: str | None = None, date_posted: str | None = None,
+                     simple: bool = False) -> str:
     '''
-    Builds a Naukri search results URL from the shared configuration.
+    Builds a Naukri URL from the resolved Naukri-specific search preferences.
 
     * `keyword` comes from `search_terms` in `config/search.py`.
     * `sort_by` / `date_posted` are passed explicitly so the non-stop run loop
       can cycle them exactly like the LinkedIn bot does.
     '''
     keyword = (keyword or "").strip()
-    location = (search_location or "").strip()
+    locations = naukri_config.get_search_locations()
+    location = ", ".join(locations)
 
     slug = _slugify(keyword) or "jobs"
     path = f"{slug}-jobs"
-    if location:
-        path += f"-in-{_slugify(location)}"
+    # Multiple cities belong in the location query, not a made-up combined slug.
+    if len(locations) == 1 and not simple:
+        path += f"-in-{_slugify(locations[0])}"
     if page > 1:
         path += f"-{page}"
 
@@ -84,7 +95,7 @@ def build_search_url(keyword: str, page: int = 1,
         params.append(f"jobAge={job_age}")
 
     sort_value = naukri_config.get_sort(sort_by)
-    if sort_value:
+    if sort_value and not simple:
         params.append(f"sort={sort_value}")
 
     work_modes = naukri_config.get_work_modes()
@@ -98,13 +109,13 @@ def build_search_url(keyword: str, page: int = 1,
 
 
 def _find_all(driver: WebDriver, selectors) -> list[WebElement]:
-    '''Returns the first non-empty match from an ordered list of `(By, value)` selectors.'''
+    '''Returns visible matches, ignoring stale or hidden loading placeholders.'''
     for by, value in selectors:
         try:
-            elements = driver.find_elements(by, value)
+            elements = [element for element in driver.find_elements(by, value) if element.is_displayed()]
             if elements:
                 return elements
-        except Exception:
+        except StaleElementReferenceException:
             continue
     return []
 
@@ -126,43 +137,110 @@ def open_search(driver: WebDriver, wait: WebDriverWait, keyword: str, page: int 
                 sort_by: str | None = None, date_posted: str | None = None) -> bool:
     '''
     Opens a Naukri search results page and waits for the results to render.
-    * Returns `True` if at least one result card was found.
+    Returns True for results, False only for an explicit empty state.
+    Raises NaukriSearchError for loading failures instead of claiming no jobs.
     '''
     url = build_search_url(keyword, page, sort_by, date_posted)
     print_lg(f"Opening Naukri search page {page}: {url}")
     driver.get(url)
-    buffer(3)
-
+    # The shared browser wait is only five seconds. Allow lazy result rendering
+    # more time, while preserving a longer wait if the caller configured one.
+    search_wait = WebDriverWait(driver, max(20, getattr(wait, '_timeout', 0)))
+    state = "loading"
     for attempt in range(3):
-        cards = get_job_cards(driver)
-        if cards:
-            return True
-        # Results are lazy rendered; nudge the page and retry before giving up.
         try:
-            driver.execute_script("window.scrollBy(0, 400);")
-        except Exception:
-            pass
-        sleep(2)
-        if attempt == 1 and _has_no_results(driver):
+            state = search_wait.until(_search_state)
+        except TimeoutException:
+            state = "loading"
+        if state == "results":
+            return True
+        if state == "empty":
             print_lg(f'Naukri reported no results for "{keyword}" on page {page}.')
             return False
-    print_lg(f'No job cards found for "{keyword}" on page {page}.')
+        if state == "blocked":
+            raise NaukriAccessError(
+                "Naukri requires sign-in or verification, or has denied access. "
+                "Complete it manually in Chrome before restarting the search.")
+        if attempt == 0:
+            print_lg("Naukri search did not load. Reloading this page once...")
+            sleep(2)
+            driver.refresh()
+        elif attempt == 1:
+            # Retry the basic route without sorting. Keep every eligibility
+            # filter, including location, experience, age, work mode and salary.
+            simple_url = build_search_url(keyword, page, sort_by, date_posted, simple=True)
+            if simple_url == url:
+                break
+            print_lg(f"Retrying the simpler Naukri search route: {simple_url}")
+            sleep(2)
+            driver.get(simple_url)
+    reason = "Naukri displayed a page-loading error" if state == "error" else "Naukri results did not finish loading"
+    raise NaukriSearchError(
+        f'{reason} for "{keyword}" on page {page}. This is not a zero-jobs result. '
+        f'Try the search manually in Chrome: {driver.current_url}')
+
+
+def _visible_marker(driver: WebDriver, markers: tuple[str, ...] | list[str]) -> bool:
+    '''Detect only visible status messages, without clicking anything.'''
+    for marker in markers:
+        for element in driver.find_elements(By.XPATH, marker):
+            try:
+                if element.is_displayed():
+                    return True
+            except StaleElementReferenceException:
+                continue
+    return False
+
+
+def _search_state(driver: WebDriver) -> str | bool:
+    '''Distinguish real results, empty searches, loading errors and access gates.'''
+    if ("/nlogin/login" in driver.current_url
+            or _visible_text_marker(driver, ("access denied", "verify you are human", "verify that you are human", "unusual traffic"))
+            or _visible_marker(driver, ("//iframe[contains(@src,'captcha')]",))):
+        return "blocked"
+    if _visible_text_marker(driver, ("oops! something went wrong", "there was an error loading the page")):
+        return "error"
+    if get_job_cards(driver):
+        return "results"
+    return "empty" if _has_no_results(driver) else False
+
+
+def _visible_text_marker(driver: WebDriver, phrases: tuple[str, ...]) -> bool:
+    '''Match rendered status text, including nested labels but excluding hidden text.'''
+    lowered = "translate(normalize-space(.),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')"
+    for phrase in phrases:
+        xpath = f"//*[not(self::script or self::style)][contains({lowered},'{phrase}') and not(.//*[contains({lowered},'{phrase}')])]"
+        for element in driver.find_elements(By.XPATH, xpath):
+            try:
+                if element.is_displayed() and phrase in " ".join(element.text.lower().split()):
+                    return True
+            except StaleElementReferenceException:
+                continue
     return False
 
 
 def _has_no_results(driver: WebDriver) -> bool:
     '''Detects Naukri's explicit "no jobs found" state.'''
-    markers = [
-        "//*[contains(translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'), 'no jobs found')]",
-        "//*[contains(translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'), 'did not match any jobs')]",
-        "//*[contains(@class, 'no-result')]",
-    ]
-    return any(try_xp(driver, marker, False) for marker in markers)
+    return (_visible_text_marker(driver, ("no jobs found", "did not match any jobs"))
+            or _visible_marker(driver, ("//*[contains(@class, 'no-result')]",)))
 
 
 def get_job_cards(driver: WebDriver) -> list[WebElement]:
     '''Returns the job result cards currently rendered on the search page.'''
     return _find_all(driver, JOB_CARD_SELECTORS)
+
+
+def matches_experience_range(experience_text: str) -> bool:
+    '''Check overlap with the desired job range, without changing applicant experience.'''
+    desired = naukri_config.get_search_experience_range()
+    if desired is None:
+        return True
+    years = [float(value) for value in re.findall(r'\d+(?:\.\d+)?', experience_text or "")]
+    if not years:
+        return True  # The existing description/profile checks still run later.
+    minimum = years[0]
+    maximum = years[1] if len(years) > 1 else float('inf') if '+' in experience_text else minimum
+    return minimum <= desired[1] and maximum >= desired[0]
 
 
 def get_card_details(driver: WebDriver, card: WebElement) -> dict:
