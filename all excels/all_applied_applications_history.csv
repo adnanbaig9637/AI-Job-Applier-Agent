@@ -3711,3 +3711,404 @@ Why Join Us?
 Define the Category: We aren't just building a tool; we are defining how AI agents and humans collaborate in the agentic world
 Founding Equity: Significant equity package commensurate with the early team role.
 Hard Problems: We are solving complex technical challenges in distributed systems.",0,Needs an AI,Unknown,Unknown,Previous resume,False,2026-10-04 14:59:50.249230,2026-10-08 14:59:55.427518,https://www.linkedin.com/jobs/view/4473434949,Easy Applied,"{('mobile phone number', '+919637641856', 'text', '+919637641856'), ('Email address [  ""Select an option"", ""adnanbaig2002@gmail.com"", ]', 'Yes', 'select', 'adnanbaig2002@gmail.com'), ('Phone country code [ ""List of phone country codes"" ]', 'Yes', 'select', 'India (+91)'), ('how many years of engineering experience do you currently have?', '2', 'text', '2')}",In Development
+4482682393,Junior AI and ML Engineer,QBYS,YS,YS,"About the job
+About QBYSS
+QBYSS is a UK-based power conversion technology company on a mission to replace legacy power architectures with programmable, software-defined solutions.
+Our patented technologies combine advanced power electronics with QBYSS Digital Power software for real-time control. We’re developing compact, highly efficient and reliable power solutions that use fewer components, reduce wasted electricity and help extend product lifespans.
+From everyday lighting to data centres, electric vehicles and demanding industrial applications, our ambition is to help power an increasingly electrified world with less energy waste and a smaller environmental footprint.
+About the role
+Help QBYSS explore practical applications of machine learning in research, data analysis and internal workflows. You’ll build small prototypes, evaluate their performance and work with colleagues to decide where AI adds measurable value.
+What you’ll do
+· Prepare and clean approved datasets for experiments and analysis.
+· Build and compare baseline models for clearly defined business problems.
+· Evaluate results against agreed metrics and document limitations.
+· Develop small Python prototypes and integrate approved AI services where useful.
+· Work with colleagues to assess usefulness, data handling and ongoing maintenance.
+What we’re looking for
+· Working knowledge of Python and basic machine learning concepts.
+· Understanding of training, validation, overfitting and model evaluation.
+· Relevant coursework or projects using data and machine learning libraries.
+· Ability to explain findings clearly and investigate unexpected results.
+Useful but not essential
+· Experience with pandas, scikit-learn, PyTorch or TensorFlow.
+· Exposure to LLM APIs, information retrieval or model deployment.
+Why join QBYSS
+Build practical AI skills while learning how to evaluate whether a solution delivers useful results.
+Recent graduates and early-career applicants are encouraged to apply.",0,Needs an AI,Unknown,Unknown,ADNAN_BAIG_Resume.pdf,False,2026-10-26 09:44:53.300812,2026-10-27 09:44:58.382781,https://www.linkedin.com/jobs/view/4482682393,Easy Applied,"{('phone', '+919637641856', 'text', '+919637641856'), ('Email [  ""Select an option"", ""adnanbaig2002@gmail.com"", ]', 'Yes', 'select', 'adnanbaig2002@gmail.com'), ('Phone country code [ ""List of phone country codes"" ]', 'Yes', 'select', 'India (+91)')}",In Development
+4481455384,AI Engineer,Unico Connec,ico Connec,ico Connec,"About the job
+AI Engineer
+LLMs, Agents & AI Services
+Mumbai (On-site)/Remote | Full-time | 2-4 years
+
+About the role:
+Unico Connect is an AI-first technology partner that builds custom mobile, web, and AI products for clients across multiple geographies. AI is core to how we design, deliver, and scale software for our customers. We are hiring an AI Engineer for a dedicated client engagement building a complex production AI platform, working on the AI capabilities and agentic features at the core of the product.
+The mandatory requirement for this role is at least one AI feature personally shipped to production for real users, with operational ownership. The role suits someone who thinks quickly on solutioning, can take an ambiguous problem to a working prototype in days, and has the discipline to carry it through to production with predictable economics. You will work alongside the Senior AI Engineer and the wider pod, with ownership of parts of the AI surface area of the product.
+
+Responsibilities:
+· Solutioning and POCs: Translate ambiguous customer problems into working POCs at speed. Pick the right model, framework, and architecture, and demonstrate value early before scaling investment.
+· LLM application development: Build AI features and services using LLM APIs from OpenAI, Anthropic, Google, and self-hosted open-weight models (Llama, Qwen, Mistral). Choose the right model per use case based on cost, latency, capability, and context-window trade-offs.
+· Agentic system design: Design and implement agentic workflows using LangGraph, CrewAI, AutoGen, LlamaIndex Agents, or custom orchestration. Cover tool use, planning, memory, and multi-step reasoning appropriate to the problem.
+· API and service development: Build production AI services and APIs using Python and FastAPI. Handle streaming responses, async processing, structured outputs, retries, and graceful degradation when models or tools fail.
+· Retrieval and tool integration: Implement RAG pipelines with vector databases (Pinecone, Weaviate, Qdrant, pgvector, Chroma), embeddings, chunking strategies, hybrid search, and reranking. Integrate external tools, internal APIs, and document sources through tool-calling and MCP-style patterns.
+· Cost analysis and unit economics: Model the per-request and per-user cost of every AI feature before it ships. Track token usage, prompt caching, batching, and model-routing strategies. Drive measurable improvements in unit economics.
+· Production hardening: Add observability and tracing (LangSmith, Langfuse, OpenTelemetry), guardrails, content safety checks, prompt injection defences, and fallback behaviour.
+· Prompt engineering and evaluation: Design, test, and iterate prompts with measured outcomes. Build evaluation harnesses for accuracy, hallucination, latency, and cost. Run benchmarks across models and prompt variants before locking in a design.
+
+Requirements:
+· AI feature shipped to production (mandatory). Must have personally built and shipped at least one AI feature that runs in production for real users, with operational ownership. POCs, internal demos, and one-off scripts do not qualify.
+· 2 to 4 years of professional software or AI engineering experience, with at least one production AI feature owned end to end.
+· Strong Python proficiency and API development with FastAPI. Comfort with type hints, async, packaging, testing, streaming responses, and authentication. Production-grade Python, not notebook-only code.
+· Hands-on depth across the LLM and agent stack. Working experience with at least two of OpenAI, Anthropic Claude, Google Gemini, or self-hosted open-weight models (vLLM, Ollama, Together, Replicate). Working familiarity with at least one agent framework (LangGraph, CrewAI, AutoGen, LlamaIndex Agents) or hand-rolled equivalent. Working knowledge of RAG, embeddings, and vector databases (Pinecone, Weaviate, Qdrant, pgvector, Chroma).
+· Solutioning speed and POC velocity. Demonstrated ability to move from a fuzzy problem to a working prototype in days. Strong instinct for what to build first, what to defer, and what to throw away.
+· Cost discipline for production AI. Ability to calculate, monitor, and optimise the cost of LLM APIs, tokens, embeddings, vector store usage, and infrastructure. Treats unit economics as a first-class concern.
+· AWS familiarity. Working knowledge of EC2, S3, IAM, and at least one of Bedrock, SageMaker, or equivalent.
+· Comfortable in a fast-moving environment. Self-directed, comfortable with ambiguity, takes ownership without being asked, and ships under shifting priorities.
+· Strong written and spoken English communication. Able to explain trade-offs to non-AI engineers, designers, product managers, and clients in plain language.
+
+Nice to have: fine-tuning or LoRA, QLoRA, PEFT exposure; MCP server authoring; eval framework experience (LangSmith, Promptfoo, Ragas, DeepEval); open-source AI contributions; multi-modal models (vision, audio).",2,Needs an AI,Umama Sayed ,https://www.linkedin.com/in/umama-sayed-67420b217,Previous resume,False,2026-10-26 19:45:05.953044,2026-10-27 09:45:12.550875,https://www.linkedin.com/jobs/view/4481455384,Easy Applied,"{('Phone country code [ ""List of phone country codes"" ]', 'Yes', 'select', 'India (+91)'), ('how many years of experience in ai engineering ?', '2', 'text', ''), ('mobile phone number', '+919637641856', 'text', '+919637641856'), ('Have you deployed systems in production ?  [  ""Select an option"", ""Yes"", ""No"", ]', 'Yes', 'select', 'Select an option'), ('Email address [  ""Select an option"", ""adnanbaig2002@gmail.com"", ]', 'Yes', 'select', 'adnanbaig2002@gmail.com')}",In Development
+4480759259,AI/ML Engineering Intern,Daice Lab,ice Lab,ice Lab,"About the job
+Job Title: AI/ML Engineering Intern
+Location: India (Remote)
+Employment Type: Internship
+
+About Daice Labs
+Daice Labs, founded by MIT CSAIL scientists, is at the forefront of developing hybrid AI infrastructure designed for long-term, complex tasks. Our technology combines advanced AI models with neurosymbolic methods and bio-inspired system design to enable improved adaptability, verification, and context retention. We prioritize collaboration by empowering human teams to co-build and co-own outcomes while providing tools for governance, persistent context, and domain-specific environments. Our innovative approach fosters adaptive learning, creating reusable building blocks for solutions across varied domains. Join us in shaping the future of governed, continuous-learning AI systems..
+
+About the Role
+We are hiring an AI/ML Engineering Intern for a 3-month internship (with potential for extension) to contribute to our research and engineering efforts remotely from India. You will work directly with senior engineers and researchers on active projects, gaining hands-on experience with production ML systems and hybrid AI architectures.
+
+Responsibilities
+Support the design and implementation of machine learning models under the guidance of senior engineers
+Conduct experiments, analyze results, and document findings
+Assist in building and maintaining data pipelines and preprocessing workflows
+Contribute to codebase improvements, testing, and documentation
+Participate in team meetings, code reviews, and technical discussions
+
+Qualifications
+Currently pursuing or recently completed a Bachelor's or Master's degree in Computer Science, Data Science, AI, Machine Learning, or a related field
+Foundational knowledge of machine learning concepts, statistical modeling, and data structures
+Proficiency in Python and familiarity with ML libraries such as PyTorch or TensorFlow
+Experience with data preprocessing and dataset management
+Strong analytical and problem-solving skills
+Clear written and verbal communication skills in English
+Ability to work independently in a remote environment while meeting deadlines
+
+Preferred
+Prior experience contributing to AI/ML research projects or open-source repositories
+Familiarity with hybrid AI approaches, generative models, or symbolic AI
+Experience with version control (Git) and collaborative development workflows
+
+Compensation: This is a paid internship. Details will be discussed during the interview process.
+
+Duration: 3-6 months, with the possibility of extension based on mutual fit and project needs.
+
+Equal Opportunity
+Daice Labs is an equal opportunity employer. All qualified applicants will receive consideration for employment without regard to race, color, age, religion, sex, sexual orientation, gender identity or expression, national origin, disability, or any other characteristic protected under applicable law.",0,Needs an AI,Unknown,Unknown,Previous resume,False,2026-10-21 09:45:32.998823,2026-10-27 09:45:39.051819,https://www.linkedin.com/jobs/view/4480759259,Easy Applied,"{('Email address [  ""Select an option"", ""adnanbaig2002@gmail.com"", ]', 'Yes', 'select', 'adnanbaig2002@gmail.com'), ('Have you completed the following level of education: Bachelor\'s Degree? [  ""Yes""<Yes>, ""No""<No>, ]', '""Yes""<Yes>', 'radio', '""Yes""<Yes>'), ('Phone country code [ ""List of phone country codes"" ]', 'Yes', 'select', 'India (+91)'), ('mobile phone number', '+919637641856', 'text', '+919637641856')}",In Development
+4483293045,AI Python Developer / Python AI Engineer,techolutio,cholutio,cholutio,"About the job
+We are looking for a AI Python Developer with strong Python backend development skills and practical exposure to Generative AI. The role focuses on developing scalable microservices, building reusable software components, and integrating AI agents and RAG-based workflows into intelligent applications.
+
+You will contribute to AI products helping transform user requirements into structured knowledge workflows, reusable AI agents, and chatbot capabilities.
+
+The ideal candidate has a strong foundation in Python, Object-Oriented Programming, API development, and problem-solving, along with hands-on exposure to LLMs, RAG, embedding models, vector databases, and AI agent development.
+
+Title : AI Python Developer 
+Location :Remote Work
+Employment Type: Full-time
+Exp Range : 1-4 years
+
+Key Responsibilities
+Python Backend Development: Develop, maintain, and optimize backend services and REST APIs using Python and FastAPI/Flask.
+Microservices Development: Build modular, reusable, and maintainable services using Object-Oriented Programming principles and established engineering standards.
+Data Modeling and Validation: Design data models, request/response schemas, and validation logic using Pydantic and appropriate database technologies.
+AI Agent Development: Build, customize, and integrate AI agents for different business use cases, following established engineering standards.
+RAG and Knowledge Retrieval: Develop and integrate Retrieval-Augmented Generation Workflows using LLMs, embedding models, and vector databases.
+Agent Orchestration: Support the integration and coordination of multiple agents and backend services where required.
+Database and Caching: Work with NoSQL databases, data modeling, and Redis or other caching mechanisms to support efficient application performance.
+Asynchronous Programming: Use Python asynchronous programming where appropriate for API calls, database operations, and LLM requests.
+Debugging and Optimization: Investigate application issues, analyze logs, identify root causes, and improve service reliability and performance.
+Cloud and Deployment Support: Work with GCP or AWS environments to assist with deployment troubleshooting, log analysis, and application monitoring.
+
+Qualifications
+Strong programming skills in Python and a solid understanding of software development fundamentals.
+Hands-on experience developing backend applications and REST APIs using FastAPI or Flask.
+Strong understanding of Object-Oriented Programming (OOP), modular design, and reusable components.
+Experience with Pydantic or similar frameworks for data validation and serialization.
+Understanding of microservices architecture and service-to-service communication.
+Strong problem-solving, analytical, and debugging skills.
+Practical exposure to Generative AI technologies, including LLMs, RAG, embedding models, vector databases, and LLM/API integrations.
+Basic hands-on exposure to AI agents and orchestration, with an understanding of how agents can be developed or adapted for specific use cases.
+Understanding of data modeling and NoSQL databases.
+Familiarity with Redis and caching concepts.
+Understanding of asynchronous programming in Python, including async/await.
+Good understanding of Git and version control.
+Exposure to GCP or AWS, including basic deployment troubleshooting and log analysis.
+
+About Techolution:
+
+Techolution is the world’s leading FEA – Full Enterprise Automation specialist. We are trusted by boards and executive leaders who need AI with real business outcomes. Despite Gen AI, LLMs, and billions in investment, most enterprise AI programs aren't delivering results.
+
+Techolution fixes that with BPA 4.0. We take the power of big Tech’s Generic AI and multiply it with our Expert AI stack — resulting in business process automations that follow the same nuances as domain experts do on the job at an unprecedented speed.
+
+Our platform has delivered over $900M in AI ROI for our clients in less than a year, all while increasing their AI Adoption by 10x.
+
+Our 3 power moves for ROI from AI:
+1. Value Finder - We Identify high-impact AI and automation opportunities in enterprises and build solutions that deliver measurable value in as little as 30 days.
+
+2. 100K Challenge:  Work on fast-paced AI initiatives where teams build solutions designed to generate 2× ROI within 100 days.
+
+3. GE LEAP:  Contribute to enterprise AI transformation through our partnership with Google, helping scale Gemini-driven solutions across organizations.
+
+Visit us @www.techolution.com : To know more about our revolutionary core practices and getting to know in detail about how we enrich the human experience with technology.",1,Needs an AI,Madhav K ,https://www.linkedin.com/in/madhav31,Previous resume,False,2026-10-27 08:45:55.849683,2026-10-27 09:46:03.982407,https://www.linkedin.com/jobs/view/4483293045,Easy Applied,"{('Are you currently serving your notice period, or have you already been relieved from your current company? [  ""Select an option"", ""Yes"", ""No"", ]', 'Yes', 'select', 'Select an option'), ('how many years of hands-on professional experience do you have with python?', '2', 'text', ''), ('how many years of hands-on professional experience do you have with fastapi?', '2', 'text', ''), ('what is your expected salary ?', '1200000', 'text', ''), ('Phone country code [ ""List of phone country codes"" ]', 'Yes', 'select', 'India (+91)'), ('how many years of hands-on experience do you have in microservices architecture?', '2', 'text', ''), ('Did you Graduate in 2022/2023/2024/2025?  [  ""Select an option"", ""Yes"", ""No"", ]', 'Yes', 'select', 'Select an option'), ('mobile phone number', '+919637641856', 'text', '+919637641856'), ('how would you rate your data structures & algorithms skills on a scale of 1–10?', '2', 'text', ''), ('Email address [  ""Select an option"", ""adnanbaig2002@gmail.com"", ]', 'Yes', 'select', 'adnanbaig2002@gmail.com'), ('in how many days can you join us?', '2', 'text', '')}",In Development
+4481455630,AI Prompt Engineer for building AI Agents for CX,Robylon A,bylon A,bylon A,"About the job
+Work responsibilities
+
+This is a non-technical role, 20% tech; 80% non-tech.
+Co-design SOPs with clients for resolving customer queries across chat, ticket and voice channels
+Scope & plan each integration: gather requirements as per the SoW and turn it into an executable timeline with success metrics (coverage %, accuracy, CSAT)
+Lead the rollout & customer success loop: monitor post-launch coverage and accuracy, dig into logs, fine-tune prompts and flows, and run quarterly “AI health-checks”
+Troubleshoot in prod - replicate issues, ship patches, and write crisp RCAs everyone can read
+Close feedback loop by channeling customer insights to product and prompt engineering teams
+Overall, 80%+ work will be non-technical like designing customer support SOPs and running quality
+Checks using AI. Upto 20% work will involve technical aspects like writing small functions in Python & SQL
+
+Skills required
+Hands-on experience with prompt writing(GPT, Claude, Gemini, etc.)
+Working knowledge of analytics and one scripting language (preferably Python) is good to have.
+Basic experience with coding adds value, but it is not mandatory
+Students in their final year will be a best fit for this role.
+
+Why join us?
+Ownership of high-impact, customer-facing projects from Day 1
+Opportunity for accelerated career growth and advancement in a fast-paced startup
+Direct collaboration with the founders and senior leadership
+2 months internship, converts into a full time role.",0,Needs an AI,Dinesh Goel ,https://www.linkedin.com/in/dinesh-goel-496b3335,Previous resume,False,2026-10-26 23:46:22.544123,2026-10-27 09:46:34.227902,https://www.linkedin.com/jobs/view/4481455630,Easy Applied,"{('Email address [  ""Select an option"", ""adnanbaig2002@gmail.com"", ]', 'Yes', 'select', 'adnanbaig2002@gmail.com'), ('Are you comfortable working in an onsite setting? [  ""Yes""<Yes>, ""No""<No>, ]', '""Yes""<Yes>', 'radio', '""Yes""<Yes>'), ('Phone country code [ ""List of phone country codes"" ]', 'Yes', 'select', 'India (+91)'), ('mobile phone number', '+919637641856', 'text', '+919637641856')}",In Development
+4482943331,AI ML Developer,Scouti,outi,outi,"About the job
+We're looking for AI ML Developers!
+
+Responsibilities:
+
+Design, develop, train, and optimize Machine Learning and Deep Learning models. 
+Analyze structured and unstructured datasets to identify business insights and opportunities. 
+Build and maintain data pipelines for model training and inference. 
+Develop AI solutions using NLP, Computer Vision, Recommendation Systems, or Predictive Analytics. 
+Deploy ML models using cloud platforms and MLOps best practices. 
+Perform feature engineering, model evaluation, hyperparameter tuning, and performance optimization. 
+Collaborate with Data Scientists, Software Engineers, and business stakeholders. 
+Monitor model performance and retrain models as required. 
+Document model architecture, experiments, and deployment processes
+
+Skills Required:
+
+Strong programming skills in Python. 
+Familiarity with Machine Learning libraries such as Scikit-learn, XGBoost, TensorFlow, Keras, or PyTorch. 
+Good understanding of Supervised & Unsupervised Learning, Deep Learning, NLP, and Computer Vision. 
+Familiarity with data analysis tools like Pandas, NumPy, Matplotlib. 
+Knowledge of SQL and working with large datasets. 
+Familiarity with REST APIs and model deployment. Familiarity with Git version control
+Exposure to Generative AI, LLMs, LangChain, RAG, Vector Databases (Pinecone, ChromaDB, FAISS). 
+Familiarity with cloud platforms such as AWS, Azure, or GCP. 
+Knowledge of Docker, Kubernetes, CI/CD, and MLOps tools. 
+Familiarity with MLflow, Airflow, or Kubeflow. 
+Familiarity with prompt engineering and AI agent frameworks
+
+(Note: Relevant applicants will receive an email requesting additional information as part of the next stage. The application process will be completed directly on the team's designated platform, and all subsequent communication and decisions regarding the opportunity are managed by the respective hiring team.)",0,Needs an AI,Unknown,Unknown,Previous resume,False,2026-10-26 15:46:43.893813,2026-10-27 09:46:49.932621,https://www.linkedin.com/jobs/view/4482943331,Easy Applied,"{('Email address [  ""Select an option"", ""adnanbaig2002@gmail.com"", ]', 'Yes', 'select', 'adnanbaig2002@gmail.com'), ('Phone country code [ ""List of phone country codes"" ]', 'Yes', 'select', 'India (+91)'), ('mobile phone number', '+919637641856', 'text', '+919637641856'), ('how many years of work experience do you have? (only whole numbers allowed)', '2', 'text', '')}",In Development
+4482931054,AI/ML Engineer,Drii,ii,ii,"About the job
+Company Description Driif.ai is building a contextual intelligence layer that replaces traditional dashboards with actionable decisions for mission-critical operations. The platform coordinates manned and unmanned systems across air, ground, and sea in real time, enabling faster, more informed responses in complex environments. By integrating diverse data streams and applying advanced AI/ML models, Driif.ai helps organizations optimize performance, safety, and situational awareness. The team focuses on high-impact applications where reliability, precision, and real-time insights are essential for success.
+Role Description As an AI/ML Engineer at Driif.ai, you will design, implement, and optimize machine learning models that power real-time decision-making across multi-domain systems. You will work closely with cross-functional teams to understand mission requirements, translate them into ML problem statements, and build robust pipelines for data ingestion, feature engineering, training, evaluation, and deployment. Day-to-day responsibilities include researching and experimenting with algorithms, developing and tuning neural network architectures, writing clean and efficient code, and conducting performance and scalability testing in production-like environments. You will also contribute to system design, documentation, and best practices for ML operations, ensuring reliability and maintainability of deployed models. This is a full-time, on-site role based in Bengaluru.
+Qualifications
+  Strong foundation in Computer Science, including data structures, software engineering principles, and system design.
+Proficiency in Algorithms and Pattern Recognition, with experience framing and solving complex ML problems.
+Solid understanding of Statistics, probability, and experimental design for model evaluation and validation.
+Hands-on experience with Neural Networks, deep learning frameworks (e.g., PyTorch, TensorFlow), and model optimization.
+Bachelor’s or Master’s degree in Computer Science, Data Science, Electrical Engineering, or a related quantitative field.
+Experience building end-to-end ML pipelines (data processing, training, deployment) in production environments.
+Strong programming skills in languages commonly used for ML (e.g., Python, C++), and familiarity with cloud or edge deployment.
+Ability to work on-site in Bengaluru, collaborate in a fast-paced environment, and communicate effectively with technical and non-technical stakeholders.
+Experience with real-time systems, robotics, or mission-critical applications is a plus.",0,Needs an AI,Unknown,Unknown,Previous resume,False,2026-10-26 17:46:58.766349,2026-10-27 09:47:04.766992,https://www.linkedin.com/jobs/view/4482931054,Easy Applied,"{('how many years of work experience do you have with artificial intelligence (ai)?', '2', 'text', '2'), ('Have you completed the following level of education: Bachelor\'s Degree? [  ""Yes""<Yes>, ""No""<No>, ]', '""Yes""<Yes>', 'radio', '""Yes""<Yes>'), ('Phone country code [ ""List of phone country codes"" ]', 'Yes', 'select', 'India (+91)'), ('mobile phone number', '+919637641856', 'text', '+919637641856'), ('how many years of work experience do you have with python (programming language)?', '2', 'text', '2'), ('Email address [  ""Select an option"", ""adnanbaig2002@gmail.com"", ]', 'Yes', 'select', 'adnanbaig2002@gmail.com'), ('how many years of work experience do you have with machine learning?', '2', 'text', '2'), ('Are you comfortable commuting to this job\'s location? [  ""Yes""<Yes>, ""No""<No>, ]', 'Yes', 'radio', None)}",In Development
+4480023020,Artificial Intelligence Engineer,LOG,G,G,"About the job
+GoDo Financial Services
+
+About the Role:
+We are hiring AI Engineers to build internal AI products and to add AI into existing company software. Work includes voice AI (meeting notetaker, transcription, summaries), LLM-based tools, and agents that take actions inside our systems.
+
+You will ship end-to-end: prototype, APIs, a usable UI, and production-ready features. Strongest skill should be applied AI. Backend and frontend need to be solid enough to build and ship, not specialist-level.
+
+Role: AI Engineer. Experience: 1–2 years. Location: India. Employment type: Full-time.
+
+What you will do:
+Notetaker: Build internal AI tools such as a meeting notetaker: capture audio, transcribe, summarize, extract action items, and make them searchable.
+Voice AI: Work with speech and voice models: STT, TTS, speaker diarization, batch and near-real-time pipelines.
+LLMs and agents: Design and ship LLM features: RAG, tool-calling agents, structured extraction, and multi-step workflows.
+Product integration: Integrate AI into existing APIs, web apps, and internal services (assistants, automations, copilots).
+Full stack: Own simple full-stack slices: backend endpoints, data stores, background jobs, and a clean frontend for internal tools and product UI.
+Model choice: Compare models and vendors (hosted APIs vs open-source), and choose based on quality, latency, and cost.
+Quality and safety: Add logging, basic evals, fallbacks, and practical safety (PII, wrong answers, access control).
+Delivery: Turn a vague product idea into a scoped MVP, then harden it for real use.
+Cloud: Build and run these systems on AWS.
+
+What you need to know:
+
+Must have:
+Experience: 1–2 years of professional software or AI engineering. Strong internships or real shipped projects count.
+LLMs: Hands-on LLM work: prompting, function/tool calling, RAG, embeddings. LangChain / LlamaIndex or equivalent custom pipelines.
+Voice: Practical speech/voice experience, or a clear ability to get there quickly (Whisper or similar STT, audio pipelines).
+Backend: Python and/or Node.js, REST APIs, async jobs, Postgres or similar.
+Frontend: React or similar, enough to build internal tools and product screens.
+Tooling: Git, Linux, Docker, and third-party AI APIs (OpenAI, AWS, or self-hosted models).
+AWS: Working knowledge of AWS (for example S3, Lambda, EC2, ECS, SQS, or equivalent services you have actually used).
+Communication: Clear written English. Able to scope and ship without a fully written spec.
+
+Nice-to-haves:
+Real-time voice (WebRTC, websocket audio, live captions).
+Agents that call tools and write back to systems, not chat-only demos.
+Vector databases (pgvector, Pinecone, Qdrant, or similar).
+FastAPI / Express / Nest, websockets, background workers.
+Prompt versioning, eval harnesses, cost/latency tracking.
+Deeper AWS experience (Bedrock, Transcribe, SageMaker, IAM, CloudWatch).
+
+Education:
+Bachelor’s degree in Computer Science or a related field.",2,Needs an AI,Unknown,Unknown,Previous resume,False,2026-10-23 09:47:48.539707,2026-10-27 09:47:54.829497,https://www.linkedin.com/jobs/view/4480023020,Easy Applied,"{('may i have ur expected salary in lpa?', '1200000', 'text', ''), ('Have you completed the following level of education: Bachelor\'s Degree? [  ""Yes""<Yes>, ""No""<No>, ]', '""Yes""<Yes>', 'radio', '""Yes""<Yes>'), ('Phone country code [ ""List of phone country codes"" ]', 'Yes', 'select', 'India (+91)'), ('how many years of work experience do you have with postgresql?', '2', 'text', '2'), ('mobile phone number', '+919637641856', 'text', '+919637641856'), ('how many years of work experience do you have with python (programming language)?', '2', 'text', '2'), ('Email address [  ""Select an option"", ""adnanbaig2002@gmail.com"", ]', 'Yes', 'select', 'adnanbaig2002@gmail.com')}",In Development
+4483293170,Generative AI Engineer,Agam Capital Indi,am Capital Indi,am Capital Indi,"About the job
+AI Engineer (Generative AI, Agentic Systems & ALM)
+Location: Mumbai, India
+Department: Technology / Artificial Intelligence
+
+Experience: Relevant experience in AI/ML engineering, Generative AI, or deep learning
+Role Overview
+
+We are looking for an AI Engineer with strong expertise in Generative AI, Large Language Models (LLMs), machine learning, and intelligent AI agents to develop AI-powered solutions for the Asset Liability Management (ALM) business.
+The role involves designing, developing, evaluating, and deploying AI applications that support financial analytics, risk modelling, and business decision-making. The ideal candidate will combine strong AI engineering capabilities with an interest in financial services, particularly lending, credit risk, and balance sheet optimization.
+
+Key Responsibilities
+Generative AI & LLMs: Develop and fine-tune LLM-based applications, implement prompt engineering strategies, and optimize models for domain-specific financial use cases.
+AI Agents & Agentic Systems: Design and build autonomous AI agents, multi-agent architectures, and tool-calling workflows to automate complex analytical and business processes.
+ALM & Financial Analytics: Apply AI/ML techniques to Asset Liability Management use cases, including financial data analysis, risk assessment, scenario analysis, and decision-support systems.
+Lending & Credit Analytics: Develop AI-powered solutions for financial services use cases, including credit risk analysis, lending analytics, portfolio monitoring, and predictive modelling, as applicable.
+AI Evaluation & Optimization: Build evaluation frameworks and benchmarks to measure model accuracy, reliability, and performance, and continuously improve AI systems.
+Machine Learning & Deep Learning: Build, train, fine-tune, and evaluate ML and deep learning models for predictive analytics and business applications.
+Model Efficiency & Deployment: Optimize model inference, latency, memory usage, and computational costs using appropriate model optimization techniques.
+AI Application Development: Develop APIs and backend services to integrate AI models into production applications and analytical workflows.
+Cloud & Infrastructure: Build and deploy scalable AI solutions using cloud services and modern backend technologies.
+Research & Innovation: Evaluate emerging AI technologies and translate relevant research into practical solutions for financial services and ALM applications.
+Cross-functional Collaboration: Work with engineering, product, and business teams to translate financial and technical requirements into effective AI-powered solutions.
+
+Required Skills & Qualifications
+Bachelor's or Master's degree in Computer Science, Artificial Intelligence, Machine Learning, or a related technical discipline.
+Strong programming skills in Python and experience developing production-quality software.
+Hands-on experience with machine learning, deep learning, or Generative AI applications.
+Knowledge of LLMs, Transformers, model fine-tuning, prompt engineering, and model evaluation.
+Familiarity with AI agents, tool-calling systems, or multi-agent workflows.
+Experience with frameworks such as PyTorch, TensorFlow, or Hugging Face libraries.
+Strong analytical, mathematical, and problem-solving skills.
+Ability to develop APIs and integrate AI capabilities into software applications.
+Interest in applying AI to financial analytics, risk modelling, and business decision-making.
+
+Preferred Qualifications
+Financial Services Experience: Candidates with experience in NBFCs, lending, credit risk, banking, or financial services will be preferred.
+ALM Knowledge: Familiarity with Asset Liability Management, balance sheet analytics, financial risk modelling, or portfolio analysis will be an advantage.
+Academic Background: Graduates from IITs or BITS campuses will be preferred.
+Graduation Year: Candidates who graduated in 2025 or earlier are preferred.
+Cloud Technologies: Experience with AWS services such as Lambda, S3, DynamoDB, SQS, or SNS.
+AI Engineering: Exposure to RAG, embeddings, vector databases, AI evaluation frameworks, and production deployment.
+Model Optimization: Familiarity with model quantization, pruning, ONNX, and inference acceleration.
+Research & Innovation: Publications, patents, or demonstrated contributions to applied AI projects will be an advantage.
+
+Key Success Measures
+Development and deployment of reliable AI applications for ALM and financial analytics.
+Improvement in the accuracy, reliability, and efficiency of AI-driven solutions.
+Successful application of AI to financial risk analysis and business decision-support workflows.
+Reduction in model inference latency and computational costs, where applicable.
+Delivery of scalable AI solutions aligned with business and technology requirements.",0,Needs an AI,Suvendu Huddar,https://www.linkedin.com/in/suvenduh,Previous resume,False,2026-10-27 09:16:01.888730,2026-10-27 09:48:07.275579,https://www.linkedin.com/jobs/view/4483293170,Easy Applied,"{('Email address [  ""Select an option"", ""adnanbaig2002@gmail.com"", ]', 'Yes', 'select', 'adnanbaig2002@gmail.com'), ('Phone country code [ ""List of phone country codes"" ]', 'Yes', 'select', 'India (+91)'), ('mobile phone number', '+919637641856', 'text', '+919637641856')}",In Development
+4481442691,AI/ML Research Scientist (Remote | $60–$120/hr),Synthire,nthire,nthire,"About the job
+ML Engineer (MSc. or PhD) (Remote | $60–$120/hr)
+
+Position: ML Engineer (MSc. or PhD)
+
+Type: Contractor (Part-Time, approximately 15 hours/week)
+
+Compensation: $60–$120/hour
+
+Location: Remote (Worldwide)
+
+About the Opportunity
+This opportunity is for experienced Machine Learning Engineers to contribute to AI training projects involving model development, training and inference systems, and performance optimization. The role is highly coding-intensive, with a focus on Python, reproducible workflows, and coding agents.
+Key Responsibilities
+Develop and validate machine learning models, training pipelines, and inference systems.
+Implement model components, data pipelines, evaluation systems, and numerical methods.
+Build reproducible workflows using Python and command-line tools.
+Debug numerical and system-level issues and optimize memory usage and performance.
+Create, solve, review, and validate challenging machine learning engineering tasks.
+Required Qualifications
+Master's degree or PhD in Computer Science, Machine Learning, AI, Applied Mathematics, Statistics, Engineering, or a related quantitative field.
+Strong professional or research experience in machine learning.
+Practical proficiency in Python and experience using coding agents.
+Ability to implement, debug, and validate complex machine learning workflows.
+Preferred Qualifications
+Experience at an established technology company, AI laboratory, or research organization.
+Exceptional academic or open-source engineering experience demonstrating relevant expertise.
+Compensation
+$60–$120/hour, with output-based payment for tasks meeting project specifications.
+Approximately 15 hours per week with a flexible schedule.
+Immediate availability preferred; first task expected within 24–48 hours after onboarding.
+Application Process
+Apply for the role and complete the screening questions.
+Complete an AI interview of approximately 30 minutes.
+Complete the hiring manager review.
+If selected, complete onboarding and begin the first task within 24–48 hours.",0,Needs an AI,Khushi Saluja ,https://www.linkedin.com/in/khushi-saluja-a6098a200,Previous resume,False,2026-10-26 17:49:22.332526,2026-10-27 09:49:27.615300,https://www.linkedin.com/jobs/view/4481442691,Easy Applied,"{('phone', '+919637641856', 'text', '+919637641856'), ('Email [  ""Select an option"", ""adnanbaig2002@gmail.com"", ]', 'Yes', 'select', 'adnanbaig2002@gmail.com'), ('Phone country code [ ""List of phone country codes"" ]', 'Yes', 'select', 'India (+91)')}",In Development
+4478083828,Artificial Intelligence Engineer,HTC Global Service,C Global Service,C Global Service,"About the job
+We are seeking a highly skilled AI engineers with Infra and support experience..
+Responsibilities include but are not limited to:
+Design, provision, configure, and maintain scalable AI infrastructure on AWS to support AI/ML applications across development, testing, and production environments.
+Deploy, manage, and troubleshoot AI/ML models, LLM applications, inference endpoints, and APIs in production environments.
+Implement monitoring, logging, alerting, and observability for AI applications using AWS CloudWatch and other monitoring tools to ensure system availability and performance.
+Provide L2/L3 production support for AI applications, investigate incidents, perform root cause analysis, and implement corrective and preventive actions.
+Manage cloud infrastructure provisioning and configuration using Terraform/Scalr, ensuring secure, consistent, and repeatable deployments.
+Troubleshoot infrastructure, application, networking, API integration, containerization, and model inference issues to minimize service disruptions.
+Implement and maintain CI/CD pipelines for automated AI application deployment, testing, version control, release management, and rollback procedures.
+Monitor AI workloads for latency, throughput, resource utilization, error rates, and operational costs, implementing performance and cost optimization measures.
+Support containerized AI applications using Docker and Kubernetes, including Amazon EKS/ECS, with a focus on scalability, availability, and reliability.
+Maintain operational runbooks, incident reports, support documentation, and disaster recovery procedures while collaborating with DevOps, platform, security, and application support teams to meet SLAs.
+ Required Skills
+Bachelor’s degree in computer science, Engineering, Data Science, Artificial Intelligence, or a related technical field.
+hands-on experience in Python and software development for AI, ML, data engineering, or cloud-based applications.
+experience in Machine Learning / Data Science, including feature engineering, model training, experimentation, evaluation, and deployment.
+experience in LLMs / Generative AI use cases such as prompt engineering, prompt optimization, RAG, embeddings, vector databases, evaluation frameworks, and guardrails.
+Strong experience with Prompt Engineering, including prompt design patterns, prompt chaining, instruction design, context-window optimization, role/task prompting, structured response generation, and prompt tuning for enterprise use cases.
+Strong understanding of Agentic AI patterns, including multi-step reasoning workflows, tool usage, memory/context handling, orchestration frameworks, and autonomous task execution.
+Strong experience with AWS cloud services for developing, deploying, and managing scalable AI/ML and data-driven applications.
+Hands-on experience with Terraform and/or Scalr for infrastructure as code and environment provisioning.
+Experience with APIs, microservices, and containerized deployments in enterprise environments.
+Experience with SQL and NoSQL databases, vector databases, and data integration across structured and unstructured sources.
+Strong knowledge of software engineering fundamentals including version control, testing, CI/CD, secure coding, code reviews, and release management.
+Experience presenting technical solutions, results, and recommendations to business stakeholders and leadership.
+Strong analytical thinking, problem-solving, communication, and cross-functional collaboration skills.
+ Preferred Skills
+Experience in financial services, investment management, compliance, risk, or other regulated enterprise environments.
+Experience with MLOps / LLMOps tools and practices for deployment, monitoring, evaluation, and lifecycle management of AI systems.
+Familiarity with frameworks and tools such as LangChain, LangGraph, LlamaIndex, Hugging Face, OpenAI APIs, Amazon Bedrock, MLflow, Airflow, Spark, or similar technologies.
+Experience designing and optimizing prompts for RAG workflows, agentic systems, tool calling, reasoning tasks, workflow automation, and domain-specific enterprise AI applications.
+Experience with semantic search, vector retrieval, document intelligence, conversational AI, and knowledge-grounded AI systems.
+Knowledge of Responsible AI, model governance, explainability, bias detection, risk controls, and enterprise AI safety practices.
+Experience working in Agile / Scrum delivery models.
+Experience leading or mentoring teams and driving implementation across multiple stakeholders.
+Advanced expertise in AI/LLMs with strong hands-on experience in end-to-end model development and deployment.
+Solid data engineering background with experience in building and managing complex, large-scale data systems.
+Proven ability to work effectively in large, collaborative teams within fast-paced, enterprise environments.
+ Key Competencies
+Strong ownership and accountability for end-to-end delivery
+Ability to translate ambiguous business problems into practical AI solutions
+Strong collaboration across engineering, product, business, and governance teams
+Technical leadership in solution design and implementation
+Strong communication and stakeholder management skills
+Continuous learning mindset with focus on emerging AI technologies and best practices",0,Needs an AI,Vindhya C. ,https://www.linkedin.com/in/vindhya-c-humanresources,Previous resume,False,2026-10-13 09:49:36.067117,2026-10-27 09:49:44.208839,https://www.linkedin.com/jobs/view/4478083828,Easy Applied,"{('how many years of work experience do you have with amazon web services (aws)?', '0', 'text', '0'), ('Phone country code [ ""List of phone country codes"" ]', 'Yes', 'select', 'India (+91)'), ('how many years of work experience do you have with machine learning algorithms?', '2', 'text', '2'), ('how many years of work experience do you have with platform engineering?', '2', 'text', ''), ('mobile phone number', '+919637641856', 'text', '+919637641856'), ('Have you worked on AI/LLM application you personally deployed into production on AWS, understand architecture & seen it through production? [  ""Select an option"", ""Yes"", ""No"", ]', 'Yes', 'select', 'Select an option'), ('Email address [  ""Select an option"", ""adnanbaig2002@gmail.com"", ]', 'Yes', 'select', 'adnanbaig2002@gmail.com'), ('how many years of work experience do you have with kubernetes?', '2', 'text', '')}",In Development
+4483790654,Data Engineer – Data Modeling,Teamware Solution,amware Solution,amware Solution,"About the job
+Data modeling
+  Mandatory skills: Data modelling, Data engineering(AWS Redshift, AWS Glue, PySspark, SQL), Data Quality
+Location: Bangalore
+Work Model: 4 days/week
+
+Data Engineering & Modeling: 
+
+Looking for a strong data professional with experience in data modeling, modern data architectures, and scalable data engineering.
+The role will involve designing conceptual/logical/physical models, building and orchestrating data pipelines, implementing transformation logic, and establishing data quality, reconciliation, and testing controls.
+Experience with SQL, cloud data platforms(AWS), ETL/ELT using AWS glue, and workflow orchestration with Airflow is preferred.",0,Needs an AI,Triveni P ,https://www.linkedin.com/in/triveni-p-186b23245,ADNAN_BAIG_Resume.pdf,False,2026-10-27 09:28:03.331408,2026-10-27 09:53:11.589261,https://www.linkedin.com/jobs/view/4483790654,Easy Applied,"{('how many years of work experience do you have with aws glue?', '2', 'text', ''), ('how many years of work experience do you have with data quality?', '2', 'text', ''), ('We must fill this position urgently. Can you start immediately? [  ""Yes""<Yes>, ""No""<No>, ]', '""Yes""<Yes>', 'radio', '""Yes""<Yes>'), ('mobile phone number', '+919637641856', 'text', '+919637641856'), ('how many years of work experience do you have with pyspark?', '2', 'text', '2'), ('how many years of work experience do you have with data modeling?', '2', 'text', ''), ('Email address [  ""Select an option"", ""adnanbaig2002@gmail.com"", ]', 'Yes', 'select', 'adnanbaig2002@gmail.com'), ('how many years of work experience do you have with data engineering?', '1', 'text', '1'), ('Phone country code [ ""List of phone country codes"" ]', 'Yes', 'select', 'India (+91)'), ('how many years of work experience do you have with sql?', '2', 'text', '2')}",In Development

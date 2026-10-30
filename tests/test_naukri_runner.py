@@ -122,6 +122,14 @@ class NaukriRunnerTests(unittest.TestCase):
             "sort_by": "Most recent", "date_posted": "Past 24 hours",
         })
 
+    def test_non_stop_run_does_not_sleep_between_cycles(self):
+        self.runner._run_non_stop = True
+
+        self.runner.run(1)
+
+        self.fixture.helpers.sleep.assert_not_called()
+        self.fixture.helpers.buffer.assert_not_called()
+
     def test_summary_dialog_tcl_failure_does_not_interrupt_browser_cleanup(self):
         self.fixture.desktop.alert.side_effect = RuntimeError("Can't find a usable init.tcl")
 

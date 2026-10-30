@@ -30,7 +30,7 @@ from config.settings import (
 )
 
 from modules.open_chrome import driver, wait
-from modules.helpers import print_lg, buffer, sleep, critical_error_log, make_directories
+from modules.helpers import print_lg, critical_error_log, make_directories
 from modules.validator import validate_config
 from modules import relevance
 from modules.naukri import naukri_config, naukri_apply
@@ -96,13 +96,6 @@ def run(total_runs: int) -> int:
     naukri_apply.apply_to_jobs(driver, wait, naukri_config.get_search_terms(), aiClient,
                                sort_by=current_sort_by, date_posted=current_date_posted)
     print_lg("########################################################################################################################\n")
-    # Only cool down between cycles. A single run has nothing left to wait for.
-    if _run_non_stop:
-        print_lg("Sleeping for 10 min...")
-        sleep(300)
-        print_lg("Few more min... Gonna start with in next 5 min...")
-        sleep(300)
-        buffer(3)
     return total_runs + 1
 
 

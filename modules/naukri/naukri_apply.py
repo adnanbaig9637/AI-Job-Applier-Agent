@@ -11,10 +11,11 @@ import csv
 from datetime import datetime
 from random import shuffle
 
-from selenium.common.exceptions import NoSuchWindowException, WebDriverException
+from selenium.common.exceptions import NoSuchWindowException, TimeoutException, WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support.ui import WebDriverWait
 
 from config.search import (
     switch_number, randomize_search_order, easy_apply_only,
@@ -23,13 +24,13 @@ from config.search import (
 )
 import config.settings as _settings_module
 from config.settings import (
-    click_gap, close_tabs, keep_screen_awake, logs_folder_path, run_in_background,
+    close_tabs, keep_screen_awake, logs_folder_path, run_in_background,
 )
 from config.secrets import use_AI, ai_provider
 from config.questions import pause_before_submit, pause_at_failed_question
 
 from modules import answers, relevance
-from modules.helpers import print_lg, buffer, sleep, calculate_date_posted, critical_error_log, truncate_for_csv
+from modules.helpers import print_lg, calculate_date_posted, critical_error_log, truncate_for_csv
 from modules.clickers_and_finders import try_xp, scroll_to_view
 from modules.naukri import naukri_config, naukri_search, naukri_questions, naukri_dialogs
 from modules.naukri.naukri_config import _opt as _setting
@@ -350,14 +351,12 @@ def _collect_external_link(driver: WebDriver, naukri_tab: str, button: WebElemen
         button.click()
     except Exception:
         driver.execute_script("arguments[0].click();", button)
-    buffer(3)
 
     application_link = "Unknown"
     tabs_after = driver.window_handles
     new_tabs = [handle for handle in tabs_after if handle not in tabs_before]
     if new_tabs:
         driver.switch_to.window(new_tabs[-1])
-        sleep(2)
         application_link = driver.current_url
         if close_tabs:
             try:
@@ -484,7 +483,12 @@ def process_job(driver: WebDriver, naukri_tab: str, details: dict, applied_jobs:
 
     print_lg(f'Trying to apply to "{title} | {company}" job. Job ID: {job_id}')
     driver.get(job_link)
-    buffer(3)
+    try:
+        WebDriverWait(driver, 15).until(
+            lambda current: _find_first(
+                current, APPLY_BUTTON_XPATHS + EXTERNAL_APPLY_XPATHS + ALREADY_APPLIED_XPATHS))
+    except TimeoutException:
+        pass
 
     if is_already_applied(driver):
         print_lg(f'Already applied to "{title} | {company}" job. Job ID: {job_id}!')
@@ -566,7 +570,6 @@ def process_job(driver: WebDriver, naukri_tab: str, details: dict, applied_jobs:
             apply_button.click()
         except Exception:
             driver.execute_script("arguments[0].click();", apply_button)
-        buffer(click_gap)
     except Exception as e:
         print_lg(f'Failed to click Apply for "{title} | {company}".', e)
         screenshot_name = screenshot(driver, job_id, "Failed to click Apply")
