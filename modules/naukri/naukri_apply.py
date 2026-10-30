@@ -18,7 +18,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
 
 from config.search import (
-    switch_number, randomize_search_order, easy_apply_only,
+    randomize_search_order, easy_apply_only,
     pause_after_filters, about_company_bad_words, about_company_good_words,
     bad_words, security_clearance, did_masters, current_experience,
 )
@@ -398,8 +398,7 @@ def process_job(driver: WebDriver, naukri_tab: str, details: dict, applied_jobs:
                 rejected_jobs: dict, blacklisted_companies: set, ai_client=None) -> bool:
     '''
     Screens and applies to a single Naukri job.
-    * Returns `True` when the job counted towards `switch_number`
-      (i.e. it was applied to, or its external link was collected).
+        * Returns `True` when it was applied to or its external link was collected.
     '''
     job_id = details.get("job_id") or ""
     title = details.get("title") or "Unknown"
@@ -624,7 +623,7 @@ def apply_to_jobs(driver: WebDriver, wait, search_terms: list[str], ai_client=No
                   sort_by: str | None = None, date_posted: str | None = None) -> None:
     '''
     Walks every configured search term on Naukri and applies to matching jobs.
-    Honours `switch_number`, `randomize_search_order` and `naukri_max_pages_per_search`.
+    Honours `randomize_search_order` and `naukri_max_pages_per_search`.
     '''
     global _pause_after_filters
 
@@ -641,12 +640,8 @@ def apply_to_jobs(driver: WebDriver, wait, search_terms: list[str], ai_client=No
         print_lg("\n________________________________________________________________________________________________________________________\n")
         print_lg(f'\n>>>> Now searching Naukri for "{search_term}" <<<<\n\n')
 
-        current_count = 0
         try:
             for page in range(1, naukri_config.max_pages_per_search + 1):
-                if current_count >= switch_number:
-                    break
-
                 if not naukri_search.open_search(driver, wait, search_term, page, sort_by, date_posted):
                     break
 
@@ -674,14 +669,9 @@ def apply_to_jobs(driver: WebDriver, wait, search_terms: list[str], ai_client=No
                 for details in page_jobs:
                     if keep_screen_awake:
                         naukri_dialogs.keep_awake()
-                    if current_count >= switch_number:
-                        print_lg(f'Reached switch_number ({switch_number}) for "{search_term}", '
-                                 f'moving to the next search term.')
-                        break
                     try:
-                        if process_job(driver, naukri_tab, details, applied_jobs,
-                                       rejected_jobs, blacklisted_companies, ai_client):
-                            current_count += 1
+                        process_job(driver, naukri_tab, details, applied_jobs,
+                                    rejected_jobs, blacklisted_companies, ai_client)
                     except (NoSuchWindowException, WebDriverException):
                         raise
                     except Exception as e:
